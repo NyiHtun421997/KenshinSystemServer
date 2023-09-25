@@ -1,7 +1,7 @@
 package com.system.kenshinsystem.service;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +24,23 @@ public class TenantServiceImpl implements TenantService{
 		this.tenantRepository = tenantRepository;
 	}
 	
+
 	@Override
-	public List<Tenant> getTenantListByBuildingNameAndFloorName(String buildingName,String floorName){
+	public List<String> getTenantListByBuildingName(String buildingName) {
 		
+		List<String> tenantsToReturn = new ArrayList<>();
 		Building building = this.buildingService.findByBuildingName(buildingName);
-		Floor floor = this.floorService.findFloorByNameAndBuildingId(floorName, building.getId());
-		
-		return this.tenantRepository.findByFloorId(floor.getId());
+		List<Floor> floors = this.floorService.getFloorListByBuildingName(buildingName);
+		for(Floor floor : floors) {
+			List<Tenant> tenants = this.tenantRepository.findByFloorId(floor.getId());
+			for(Tenant x: tenants) {
+				tenantsToReturn.add(floor.getName() + "・" + x.getName());
+			}
+			
+			
+		}
+		return tenantsToReturn;
 	}
+
 
 }

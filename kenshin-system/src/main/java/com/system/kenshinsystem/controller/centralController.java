@@ -3,7 +3,6 @@ package com.system.kenshinsystem.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,19 +81,15 @@ public class centralController {
 	}
 	
 	@GetMapping("/tenants")
-	public List<String> getTenantListByBldNameAndFloorName(@RequestParam(name = "building_name",required = false)String buildingName
-			,@RequestParam(name = "floor_name",required = false)String floorName){
+	public List<String> getTenantListByBldName(@RequestParam(name = "building_name",required = false)String buildingName){
 		
-		List<Tenant> tenants = this.tenantService.getTenantListByBuildingNameAndFloorName(buildingName, floorName);
-		List<String> tenantNames = new ArrayList<>();
+		List<String> tenants = this.tenantService.getTenantListByBuildingName(buildingName);
+		
 		if(tenants == null) {
 			return null;
-			
 		}
-		for(Tenant x : tenants) {
-			tenantNames.add(x.getName());
-		}
-		return tenantNames;
+		
+		return tenants;
 		
 	}
 	
