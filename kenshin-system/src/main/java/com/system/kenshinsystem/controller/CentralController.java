@@ -21,7 +21,7 @@ import com.system.kenshinsystem.service.TenantService;
 
 @RestController
 @RequestMapping(path="api/kenshin/central")
-public class centralController {
+public class CentralController {
 	
 	private final ReadingDateService readingDateService;
 	private final BuildingService buildingService;
@@ -30,7 +30,7 @@ public class centralController {
 	private final ReadingsService readingsService;
 	
 	@Autowired
-	public centralController(ReadingDateService readingDateService,BuildingService buildingService,
+	public CentralController(ReadingDateService readingDateService,BuildingService buildingService,
 			FloorService floorService,TenantService tenantService,ReadingsService readingsService) {
 		
 		this.readingDateService = readingDateService;
@@ -41,9 +41,10 @@ public class centralController {
 	}
 	
 	@GetMapping("/latest_date")
-	public LocalDate getLatestDayForBuilding(@RequestParam(name = "building_name",required = false)String buildingName) {
+	public String getLatestDayForBuilding(@RequestParam(name = "building_name",required = false)String buildingName) {
 		
-		return this.readingDateService.getLatestDateByBuildingName(buildingName);
+		LocalDate latestDate = this.readingDateService.getLatestDateByBuildingName(buildingName);
+		return latestDate.getYear()+"-"+Integer.toString(latestDate.getMonthValue()+1);
 	}
 	
 	@GetMapping("/building_names")
