@@ -115,13 +115,7 @@ public class config {
 		         floor2B.setBuilding(buildingB);
 		         floorRepository.save(floor2B);
 		         
-		         Floor floor3B = new Floor();
-		         floor3B.setName("3F");
-		         floor3B.setArea(80d);
-		         floor3B.setBuilding(buildingB);
-		         floorRepository.save(floor3B);
-		         
-		         buildingB.setFloors(List.of(floor1B,floor2B,floor3B));
+		         buildingB.setFloors(List.of(floor1B,floor2B));
 		         buildingRepository.save(buildingB);
 		         
 		         //creating tenant records
@@ -179,14 +173,14 @@ public class config {
 		         reading4.setReadingDate(readingDate1);
 		         readingsRepository.save(reading4);
 		         
-		         Readings reading5 = new Readings();
+		        /* Readings reading5 = new Readings();
 		         reading5.setLightingReading(19.7);
 		         reading5.setPowerReading(6.5);
 		         reading5.setWaterReading(9.4);
 		         reading5.setGasReading(21.3);
 		         reading5.setFloor(floor3B);
 		         reading5.setReadingDate(readingDate1);
-		         readingsRepository.save(reading5);
+		         readingsRepository.save(reading5);*/
 		         
 		         
 			

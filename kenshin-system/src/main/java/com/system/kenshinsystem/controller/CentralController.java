@@ -3,12 +3,17 @@ package com.system.kenshinsystem.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.system.kenshinsystem.dto.ReadingDTO;
 import com.system.kenshinsystem.model.Building;
 import com.system.kenshinsystem.model.Floor;
 import com.system.kenshinsystem.model.Readings;
@@ -17,6 +22,7 @@ import com.system.kenshinsystem.service.BuildingService;
 import com.system.kenshinsystem.service.FloorService;
 import com.system.kenshinsystem.service.ReadingDateService;
 import com.system.kenshinsystem.service.ReadingsService;
+import com.system.kenshinsystem.service.TempMapService;
 import com.system.kenshinsystem.service.TenantService;
 
 @RestController
@@ -28,16 +34,19 @@ public class CentralController {
 	private final FloorService floorService;
 	private final TenantService tenantService;
 	private final ReadingsService readingsService;
+	private final TempMapService tempMapService;
 	
 	@Autowired
 	public CentralController(ReadingDateService readingDateService,BuildingService buildingService,
-			FloorService floorService,TenantService tenantService,ReadingsService readingsService) {
+			FloorService floorService,TenantService tenantService,ReadingsService readingsService,
+			TempMapService tempMapService) {
 		
 		this.readingDateService = readingDateService;
 		this.buildingService = buildingService;
 		this.floorService = floorService;
 		this.tenantService = tenantService;
 		this.readingsService = readingsService;
+		this.tempMapService = tempMapService;
 	}
 	
 	@GetMapping("/latest_date")
@@ -112,6 +121,23 @@ public class CentralController {
 		return readingsToReturn;*/
 		return readings;
 		
+	}
+	@PostMapping("/save_readings")
+	public void storeReadingsInTempMap(@RequestBody ReadingDTO readingDTO) {
+		
+		tempMapService.addReading(readingDTO);
+	}
+	//For Testing TempMap
+	@GetMapping("/get_temp_readings")
+	public List<Object> getAllReadings(){
+		List<Object> newList = new ArrayList<>();
+		Map<String, Map<String, ReadingDTO>> bld_floorMap = tempMapService.getAllReadings();
+		for(String x : bld_floorMap.keySet()) {
+			for(String y : bld_floorMap.get(x).keySet()) {
+				newList.add(bld_floorMap.get(x).get(y));
+			}
+		}
+		return newList;
 	}
 
 }

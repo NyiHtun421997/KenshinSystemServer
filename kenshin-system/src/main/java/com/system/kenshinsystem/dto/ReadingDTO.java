@@ -6,16 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class readingDTO {
+@ToString
+public class ReadingDTO {
 	
-	private String buildingName,floorName,tenantName;
+	private Double[] readings = new Double[4];//電灯、動力、水道、ガス
+	private Double[] readingsBeforeChange;
+	private String[] pictureUrls = new String[4];
+	private String buildingName,floorName;
 	private LocalDate readingDate;
-	private Double lightingReading,powerReading,waterReading,gasReading;
-	private String lightingURL,powerURL,waterURL,gasURL;
-
+	
 }
