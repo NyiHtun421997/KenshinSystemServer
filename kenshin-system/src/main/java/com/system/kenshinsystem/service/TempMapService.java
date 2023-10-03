@@ -44,7 +44,15 @@ public class TempMapService {
             return floorMap.get(floorName);		
         }		
         return null;		
-    }		
+    }	
+    
+    public Boolean doesBuildingDataExist(String buildingName) {
+    	
+    	if(bld_floorMap.containsKey(buildingName)) return true;
+    	
+    	else return false;
+    	
+    }
 		
 		
 }		

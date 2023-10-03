@@ -17,7 +17,6 @@ public class ReadingDTO {
 	
 	private Double[] readings = new Double[4];//電灯、動力、水道、ガス
 	private Double[] readingsBeforeChange;
-	private String[] pictureUrls = new String[4];
 	private String buildingName,floorName;
 	private LocalDate readingDate;
 	
