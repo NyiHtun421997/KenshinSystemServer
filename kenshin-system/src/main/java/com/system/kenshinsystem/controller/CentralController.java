@@ -142,21 +142,12 @@ public class CentralController {
 			
 			//will multiply each reading with this area ratio to get reading for each tenant
 			Double areaRatio = this.tenantService.getAreaRatio(tenantName);
-			System.out.println("***************************************"+areaRatio);
+			
 			ReadingDTO readingDTO = floor_reading_map.get(tenant.getFloor().getName());
-			//multiplying with area ratio for each tenant reading
-			Double[] oldReadings =  readingDTO.getReadings();
-			Double[] newReadings = { oldReadings[0]*areaRatio, oldReadings[1]*areaRatio, oldReadings[2]*areaRatio, oldReadings[3]*areaRatio };
-			System.out.println(oldReadings[0]+","+oldReadings[1]+","+oldReadings[2]+","+oldReadings[3]+"**********************");
-			System.out.println(newReadings[0]+","+newReadings[1]+","+newReadings[2]+","+newReadings[3]+"**********************");
-			readingDTO.setReadings(newReadings);
+			//call the mapper method to convert readings for each floor from temporary storage to readings for each tenant
+			ReadingDTO newReadingDTO = ReadingMapper.floorToTenantReadingDTO(readingDTO, areaRatio);
 			
-			//multiplying with area ratio for each tenant reading before change
-			Double[] oldReadingsBeforeChange =  readingDTO.getReadingsBeforeChange();
-			Double[] newReadingsBeforeChange = { oldReadingsBeforeChange[0]*areaRatio, oldReadingsBeforeChange[1]*areaRatio, oldReadingsBeforeChange[2]*areaRatio, oldReadingsBeforeChange[3]*areaRatio };
-			readingDTO.setReadingsBeforeChange(newReadingsBeforeChange);
-			
-			tenant_reading_map.put(floor_tenant, readingDTO);
+			tenant_reading_map.put(floor_tenant, newReadingDTO);
 		}
 		return tenant_reading_map;
 		

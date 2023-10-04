@@ -34,6 +34,27 @@ public class ReadingMapper {
 		return readingDTO;
 		
 	}
+
+	//Mapper method to convert Readings for each floor to Readings for each tenant
+public static ReadingDTO floorToTenantReadingDTO(ReadingDTO readingDTO,Double areaRatio) {
+	
+	//multiplying with area ratio for each tenant reading
+	Double[] oldReadings =  readingDTO.getReadings();
+	Double[] newReadings = { oldReadings[0]*areaRatio, oldReadings[1]*areaRatio, oldReadings[2]*areaRatio, oldReadings[3]*areaRatio };
+	
+	
+	//multiplying with area ratio for each tenant reading before change
+	Double[] oldReadingsBeforeChange =  readingDTO.getReadingsBeforeChange();
+	Double[] newReadingsBeforeChange = { oldReadingsBeforeChange[0]*areaRatio, oldReadingsBeforeChange[1]*areaRatio, oldReadingsBeforeChange[2]*areaRatio, oldReadingsBeforeChange[3]*areaRatio };
+		String buildingName = readingDTO.getBuildingName();
+		String floorName = readingDTO.getFloorName();
+		LocalDate readingDate = readingDTO.getReadingDate();
+		
+		ReadingDTO newReadingDTO = new ReadingDTO( newReadings,newReadingsBeforeChange,buildingName,floorName,readingDate);
+												
+		return newReadingDTO;
+		
+	}
 	
 
 }
