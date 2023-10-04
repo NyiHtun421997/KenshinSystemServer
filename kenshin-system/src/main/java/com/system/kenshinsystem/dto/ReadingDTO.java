@@ -19,5 +19,6 @@ public class ReadingDTO {
 	private Double[] readingsBeforeChange;
 	private String buildingName,floorName;
 	private LocalDate readingDate;
+	private String comment;
 	
 }

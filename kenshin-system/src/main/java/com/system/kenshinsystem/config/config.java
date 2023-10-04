@@ -67,10 +67,16 @@ public class config {
 		         readingDateRepository.save(readingDate3);
 		         
 		         ReadingDate readingDate4 = new ReadingDate();
-		         readingDate4.setDate(LocalDate.of(2022, 10, 1));
+		         readingDate4.setDate(LocalDate.of(2022, 11, 1));
 		         readingDate4.setBuilding(List.of(buildingC));
 		         
 		         readingDateRepository.save(readingDate4);
+		         
+		         ReadingDate readingDate5 = new ReadingDate();
+		         readingDate5.setDate(LocalDate.of(2022, 10, 1));
+		         readingDate5.setBuilding(List.of(buildingC));
+		         
+		         readingDateRepository.save(readingDate5);
 		         
 		         //creating a new Floor record
 		         
@@ -129,196 +135,253 @@ public class config {
 		         t32FC.setArea(100d);
 		         t32FC.setName("ABC＿CompanyLimited");
 		         t32FC.setFloor(floor2C);
-		         tenantRepository.saveAll(List.of(t11FC,t21FC,t32FC));
+		         
+		         Tenant t43FC = new Tenant();
+		         t43FC.setArea(100d);
+		         t43FC.setName("大京");
+		         t43FC.setFloor(floor3C);
+		         tenantRepository.saveAll(List.of(t11FC,t21FC,t32FC,t43FC));
 		         
 		         //creating reading record
+		         
 		         Readings reading1 = new Readings();
-		         reading1.setLightingReading(20.3);
-		         reading1.setPowerReading(34.5);
-		         reading1.setWaterReading(12.2);
-		         reading1.setGasReading(12d);
+		         reading1.setLightingReading(9.3);
+		         reading1.setPowerReading(32.5);
+		         reading1.setWaterReading(13.4);
+		         reading1.setGasReading(11.9);
 		         reading1.setLightingReadingBeforeChange(0d);
 		         reading1.setPowerReadingBeforeChange(0d);
 		         reading1.setWaterReadingBeforeChange(0d);
 		         reading1.setGasReadingBeforeChange(0d);
-		         reading1.setFloor(floor1C);
-		         reading1.setReadingDate(readingDate2);
+		         reading1.setFloor(floor2B);
+		         reading1.setReadingDate(readingDate1);
 		         readingsRepository.save(reading1);
 		         
 		         Readings reading2 = new Readings();
-		         reading2.setLightingReading(22.3);
-		         reading2.setPowerReading(37.5);
-		         reading2.setWaterReading(12.4);
-		         reading2.setGasReading(11d);
+		         reading2.setLightingReading(19.7);
+		         reading2.setPowerReading(6.5);
+		         reading2.setWaterReading(9.4);
+		         reading2.setGasReading(21.3);
 		         reading2.setLightingReadingBeforeChange(0d);
 		         reading2.setPowerReadingBeforeChange(0d);
 		         reading2.setWaterReadingBeforeChange(0d);
 		         reading2.setGasReadingBeforeChange(0d);
-		         reading2.setFloor(floor2C);
-		         reading2.setReadingDate(readingDate3);
+		         reading2.setFloor(floor1B);
+		         reading2.setReadingDate(readingDate2);
 		         readingsRepository.save(reading2);
 		         
+		      // Reading 3
 		         Readings reading3 = new Readings();
-		         reading3.setLightingReading(19.3);
-		         reading3.setPowerReading(30.5);
-		         reading3.setWaterReading(9.4);
-		         reading3.setGasReading(11.3);
+		         reading3.setLightingReading(27.3);
+		         reading3.setPowerReading(27.5);
+		         reading3.setWaterReading(19.2);
+		         reading3.setGasReading(19.0);
 		         reading3.setLightingReadingBeforeChange(0d);
 		         reading3.setPowerReadingBeforeChange(0d);
 		         reading3.setWaterReadingBeforeChange(0d);
 		         reading3.setGasReadingBeforeChange(0d);
-		         reading3.setFloor(floor1B);
-		         reading3.setReadingDate(readingDate1);
+		         reading3.setFloor(floor1C);
+		         reading3.setReadingDate(readingDate5);
 		         readingsRepository.save(reading3);
-		         
+
+		         // Reading 4
 		         Readings reading4 = new Readings();
-		         reading4.setLightingReading(9.3);
-		         reading4.setPowerReading(32.5);
-		         reading4.setWaterReading(13.4);
-		         reading4.setGasReading(11.9);
+		         reading4.setLightingReading(34.3);
+		         reading4.setPowerReading(34.5);
+		         reading4.setWaterReading(26.2);
+		         reading4.setGasReading(26.0);
 		         reading4.setLightingReadingBeforeChange(0d);
 		         reading4.setPowerReadingBeforeChange(0d);
 		         reading4.setWaterReadingBeforeChange(0d);
 		         reading4.setGasReadingBeforeChange(0d);
-		         reading4.setFloor(floor2B);
-		         reading4.setReadingDate(readingDate1);
+		         reading4.setFloor(floor2C);
+		         reading4.setReadingDate(readingDate5);
 		         readingsRepository.save(reading4);
-		         
+
+		         // Reading 5
 		         Readings reading5 = new Readings();
-		         reading5.setLightingReading(19.7);
-		         reading5.setPowerReading(6.5);
-		         reading5.setWaterReading(9.4);
-		         reading5.setGasReading(21.3);
+		         reading5.setLightingReading(41.3);
+		         reading5.setPowerReading(41.5);
+		         reading5.setWaterReading(33.2);
+		         reading5.setGasReading(33.0);
 		         reading5.setLightingReadingBeforeChange(0d);
 		         reading5.setPowerReadingBeforeChange(0d);
 		         reading5.setWaterReadingBeforeChange(0d);
 		         reading5.setGasReadingBeforeChange(0d);
-		         reading5.setFloor(floor2C);
-		         reading5.setReadingDate(readingDate2);
+		         reading5.setFloor(floor3C);
+		         reading5.setReadingDate(readingDate5);
 		         readingsRepository.save(reading5);
-		         
+
+		         // Reading 6
 		         Readings reading6 = new Readings();
-		         reading6.setLightingReading(18.7);
-		         reading6.setPowerReading(7.5);
-		         reading6.setWaterReading(12.4);
-		         reading6.setGasReading(10.3);
+		         reading6.setLightingReading(48.3);
+		         reading6.setPowerReading(48.5);
+		         reading6.setWaterReading(40.2);
+		         reading6.setGasReading(40.0);
 		         reading6.setLightingReadingBeforeChange(0d);
 		         reading6.setPowerReadingBeforeChange(0d);
 		         reading6.setWaterReadingBeforeChange(0d);
 		         reading6.setGasReadingBeforeChange(0d);
-		         reading6.setFloor(floor3C);
-		         reading6.setReadingDate(readingDate2);
+		         reading6.setFloor(floor1C);
+		         reading6.setReadingDate(readingDate4);
 		         readingsRepository.save(reading6);
-		         
+
+		         // Reading 7
 		         Readings reading7 = new Readings();
-		         reading7.setLightingReading(14.7);
-		         reading7.setPowerReading(13.5);
-		         reading7.setWaterReading(10.9);
-		         reading7.setGasReading(9.6);
+		         reading7.setLightingReading(55.3);
+		         reading7.setPowerReading(55.5);
+		         reading7.setWaterReading(47.2);
+		         reading7.setGasReading(47.0);
 		         reading7.setLightingReadingBeforeChange(0d);
 		         reading7.setPowerReadingBeforeChange(0d);
 		         reading7.setWaterReadingBeforeChange(0d);
 		         reading7.setGasReadingBeforeChange(0d);
-		         reading7.setFloor(floor1C);
-		         reading7.setReadingDate(readingDate1);
+		         reading7.setFloor(floor2C);
+		         reading7.setReadingDate(readingDate4);
 		         readingsRepository.save(reading7);
-		         
+
+		         // Reading 8
 		         Readings reading8 = new Readings();
-		         reading8.setLightingReading(17.7);
-		         reading8.setPowerReading(11.5);
-		         reading8.setWaterReading(11.4);
-		         reading8.setGasReading(8.3);
+		         reading8.setLightingReading(62.3);
+		         reading8.setPowerReading(62.5);
+		         reading8.setWaterReading(54.2);
+		         reading8.setGasReading(54.0);
 		         reading8.setLightingReadingBeforeChange(0d);
 		         reading8.setPowerReadingBeforeChange(0d);
 		         reading8.setWaterReadingBeforeChange(0d);
 		         reading8.setGasReadingBeforeChange(0d);
 		         reading8.setFloor(floor3C);
-		         reading8.setReadingDate(readingDate1);
+		         reading8.setReadingDate(readingDate4);
 		         readingsRepository.save(reading8);
-		         
+
+		         // Reading 9
 		         Readings reading9 = new Readings();
-		         reading9.setLightingReading(16.1);
-		         reading9.setPowerReading(10.3);
-		         reading9.setWaterReading(10.4);
-		         reading9.setGasReading(9.9);
+		         reading9.setLightingReading(69.3);
+		         reading9.setPowerReading(69.5);
+		         reading9.setWaterReading(61.2);
+		         reading9.setGasReading(61.0);
 		         reading9.setLightingReadingBeforeChange(0d);
 		         reading9.setPowerReadingBeforeChange(0d);
 		         reading9.setWaterReadingBeforeChange(0d);
 		         reading9.setGasReadingBeforeChange(0d);
 		         reading9.setFloor(floor1C);
-		         reading9.setReadingDate(readingDate3);
+		         reading9.setReadingDate(readingDate1);
 		         readingsRepository.save(reading9);
-		         
+
+		         // Reading 10
 		         Readings reading10 = new Readings();
-		         reading10.setLightingReading(17.7);
-		         reading10.setPowerReading(12.5);
-		         reading10.setWaterReading(11.4);
-		         reading10.setGasReading(10.3);
+		         reading10.setLightingReading(76.3);
+		         reading10.setPowerReading(76.5);
+		         reading10.setWaterReading(68.2);
+		         reading10.setGasReading(68.0);
 		         reading10.setLightingReadingBeforeChange(0d);
 		         reading10.setPowerReadingBeforeChange(0d);
 		         reading10.setWaterReadingBeforeChange(0d);
 		         reading10.setGasReadingBeforeChange(0d);
-		         reading10.setFloor(floor3C);
-		         reading10.setReadingDate(readingDate3);
+		         reading10.setFloor(floor2C);
+		         reading10.setReadingDate(readingDate1);
 		         readingsRepository.save(reading10);
-		         
-		      // Reading 11
+
+		         // Reading 11
 		         Readings reading11 = new Readings();
-		         reading11.setLightingReading(20.2);  // Random value within ±3 fluctuation
-		         reading11.setPowerReading(15.1);     // Random value within ±3 fluctuation
-		         reading11.setWaterReading(13.9);     // Random value within ±3 fluctuation
-		         reading11.setGasReading(11.7);       // Random value within ±3 fluctuation
+		         reading11.setLightingReading(83.3);
+		         reading11.setPowerReading(83.5);
+		         reading11.setWaterReading(75.2);
+		         reading11.setGasReading(75.0);
 		         reading11.setLightingReadingBeforeChange(0d);
 		         reading11.setPowerReadingBeforeChange(0d);
 		         reading11.setWaterReadingBeforeChange(0d);
 		         reading11.setGasReadingBeforeChange(0d);
-		         reading11.setFloor(floor1C);
-		         reading11.setReadingDate(readingDate4);
+		         reading11.setFloor(floor3C);
+		         reading11.setReadingDate(readingDate1);
 		         readingsRepository.save(reading11);
 
 		         // Reading 12
 		         Readings reading12 = new Readings();
-		         reading12.setLightingReading(16.8);  // Random value within ±3 fluctuation
-		         reading12.setPowerReading(14.2);     // Random value within ±3 fluctuation
-		         reading12.setWaterReading(10.7);     // Random value within ±3 fluctuation
-		         reading12.setGasReading(12.1);       // Random value within ±3 fluctuation
+		         reading12.setLightingReading(90.3);
+		         reading12.setPowerReading(90.5);
+		         reading12.setWaterReading(82.2);
+		         reading12.setGasReading(82.0);
 		         reading12.setLightingReadingBeforeChange(0d);
 		         reading12.setPowerReadingBeforeChange(0d);
 		         reading12.setWaterReadingBeforeChange(0d);
 		         reading12.setGasReadingBeforeChange(0d);
-		         reading12.setFloor(floor2C);
-		         reading12.setReadingDate(readingDate4);
+		         reading12.setFloor(floor1C);
+		         reading12.setReadingDate(readingDate2);
 		         readingsRepository.save(reading12);
 
 		         // Reading 13
 		         Readings reading13 = new Readings();
-		         reading13.setLightingReading(18.6);  // Random value within ±3 fluctuation
-		         reading13.setPowerReading(11.8);     // Random value within ±3 fluctuation
-		         reading13.setWaterReading(14.3);     // Random value within ±3 fluctuation
-		         reading13.setGasReading(9.9);        // Random value within ±3 fluctuation
+		         reading13.setLightingReading(97.3);
+		         reading13.setPowerReading(97.5);
+		         reading13.setWaterReading(89.2);
+		         reading13.setGasReading(89.0);
 		         reading13.setLightingReadingBeforeChange(0d);
 		         reading13.setPowerReadingBeforeChange(0d);
 		         reading13.setWaterReadingBeforeChange(0d);
 		         reading13.setGasReadingBeforeChange(0d);
-		         reading13.setFloor(floor3C);
-		         reading13.setReadingDate(readingDate4);
+		         reading13.setFloor(floor2C);
+		         reading13.setReadingDate(readingDate2);
 		         readingsRepository.save(reading13);
-		         
-		      // Reading 14
-		         Readings reading14 = new Readings();
-		         reading14.setLightingReading(19.3);  // Random value within ±3 fluctuation
-		         reading14.setPowerReading(13.7);     // Random value within ±3 fluctuation
-		         reading14.setWaterReading(10.2);     // Random value within ±3 fluctuation
-		         reading14.setGasReading(12.8);       // Random value within ±3 fluctuation
-		         reading14.setLightingReadingBeforeChange(0d);
-		         reading14.setPowerReadingBeforeChange(0d);
-		         reading14.setWaterReadingBeforeChange(0d);
-		         reading14.setGasReadingBeforeChange(0d);
-		         reading14.setFloor(floor2C);
-		         reading14.setReadingDate(readingDate1);
-		         readingsRepository.save(reading14);
 
-			
+		         // Reading 14 (Already provided in a previous response)
+
+		         // Reading 15
+		         Readings reading15 = new Readings();
+		         reading15.setLightingReading(104.3);
+		         reading15.setPowerReading(104.5);
+		         reading15.setWaterReading(96.2);
+		         reading15.setGasReading(96.0);
+		         reading15.setLightingReadingBeforeChange(0d);
+		         reading15.setPowerReadingBeforeChange(0d);
+		         reading15.setWaterReadingBeforeChange(0d);
+		         reading15.setGasReadingBeforeChange(0d);
+		         reading15.setFloor(floor3C);
+		         reading15.setReadingDate(readingDate2);
+		         readingsRepository.save(reading15);
+
+		         // Reading 16
+		         Readings reading16 = new Readings();
+		         reading16.setLightingReading(111.3);
+		         reading16.setPowerReading(111.5);
+		         reading16.setWaterReading(103.2);
+		         reading16.setGasReading(103.0);
+		         reading16.setLightingReadingBeforeChange(0d);
+		         reading16.setPowerReadingBeforeChange(0d);
+		         reading16.setWaterReadingBeforeChange(0d);
+		         reading16.setGasReadingBeforeChange(0d);
+		         reading16.setFloor(floor1C);
+		         reading16.setReadingDate(readingDate3);
+		         readingsRepository.save(reading16);
+
+		         // Reading 17
+		         Readings reading17 = new Readings();
+		         reading17.setLightingReading(118.3);
+		         reading17.setPowerReading(118.5);
+		         reading17.setWaterReading(110.2);
+		         reading17.setGasReading(110.0);
+		         reading17.setLightingReadingBeforeChange(0d);
+		         reading17.setPowerReadingBeforeChange(0d);
+		         reading17.setWaterReadingBeforeChange(0d);
+		         reading17.setGasReadingBeforeChange(0d);
+		         reading17.setFloor(floor2C);
+		         reading17.setReadingDate(readingDate3);
+		         readingsRepository.save(reading17);
+
+		      // Reading 18
+		         Readings reading18 = new Readings();
+		         reading18.setLightingReading(125.3);
+		         reading18.setPowerReading(123.5);
+		         reading18.setWaterReading(117.2);
+		         reading18.setGasReading(118.0);
+		         reading18.setLightingReadingBeforeChange(0d);
+		         reading18.setPowerReadingBeforeChange(0d);
+		         reading18.setWaterReadingBeforeChange(0d);
+		         reading18.setGasReadingBeforeChange(0d);
+		         reading18.setFloor(floor3C);
+		         reading18.setReadingDate(readingDate3);
+		         readingsRepository.save(reading18);
+
 		};
 	}
 
