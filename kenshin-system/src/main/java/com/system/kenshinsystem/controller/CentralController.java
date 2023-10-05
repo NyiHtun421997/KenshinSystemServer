@@ -120,6 +120,15 @@ public class CentralController {
 		
 		tempMapService.addReading(readingDTO);
 	}
+	@PostMapping("/temporary/save_comments")
+	public void storeComments(@RequestParam(name = "building_name",required = false)String buildingName,
+			@RequestBody LinkedHashMap<String,String> commentData){
+		
+		if(this.tempMapService.doesBuildingDataExist(buildingName)) {
+			
+			this.tempMapService.storeComments(buildingName, commentData);
+		}
+	}
 	//end point for converting readings for each floor from temporary storage into readings for each tenant
 	//this will be passed to CS01
 	@GetMapping("/temporary/get_readings")
@@ -200,7 +209,6 @@ public class CentralController {
 		
 		return this.tempMapService.doesBuildingDataExist(buildingName);
 	}
-	
 	
 
 }

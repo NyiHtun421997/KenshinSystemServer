@@ -53,6 +53,9 @@ public class Readings {
 	@Column(nullable = true)
 	private Double gasReadingBeforeChange;
 	
+	@Column(nullable = true, length = 5000)
+	private String comment;
+	
 	@ManyToOne
 	@JoinColumn(name = "floor_id")
 	private Floor floor;

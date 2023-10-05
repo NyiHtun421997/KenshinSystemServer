@@ -53,6 +53,42 @@ public class TempMapService {
     	else return false;
     	
     }
+    
+    public void storeComments(String buildingName, LinkedHashMap<String,String> commentData) {
+    	
+    	LinkedHashMap<String,String> commentDataForFloor = new LinkedHashMap<>();
+    	//converting comments for each tenant to comments for each floor
+    	//comments of tenants in the same floor are combined
+    	
+    	for(Map.Entry<String, String> x : commentData.entrySet()) {
+    		
+    		//Testing
+    		System.out.println(x.getKey()+" "+x.getValue());
+    		String floor = x.getKey(); // this will be floor・tenant format
+    		floor = floor.substring(0,floor.indexOf("・"));
+    		System.out.println(floor);
+    		if(commentDataForFloor.containsKey(floor)) {
+    			//for tenants of the same floor
+    			String existingCmt = commentDataForFloor.get(floor);
+    			System.out.println(existingCmt);
+    			String newCmt = existingCmt+"\n"+x.getKey()+"\n"+x.getValue();
+    			System.out.println(newCmt);
+    			
+    			commentDataForFloor.put(floor, newCmt);
+    		}
+    		else {
+    			commentDataForFloor.put(floor, x.getKey()+"\n"+x.getValue());
+    		}
+    	}
+    	//store each comments inside Map to each readingDTO obj
+    	// Get the inner map for the building		
+        Map<String, ReadingDTO> floorMap = bld_floorMap.get(buildingName);
+        
+        for(String x : floorMap.keySet()) {
+        	
+        	floorMap.get(x).setComment(commentDataForFloor.get(x));
+        }
+    }
 		
 		
 }		
