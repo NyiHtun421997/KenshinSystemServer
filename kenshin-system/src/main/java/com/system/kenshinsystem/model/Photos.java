@@ -21,20 +21,20 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table
-public class ImageURL {
+public class Photos {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false)
+	@Column(unique = true,nullable = false)
 	private String name;
 	
 	@Column(nullable = false)
 	private String type;
 	
-	@Column(unique = false, nullable = false, length = 100000)
-	private byte[] image;
+	@Column(unique = true,nullable = false)
+	private String imageURL;
 	
 	@ManyToOne
 	@JoinColumn(name = "reading_id", nullable = true)

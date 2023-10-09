@@ -65,6 +65,6 @@ public class Readings {
 	private ReadingDate readingDate;
 	
 	@OneToMany(mappedBy = "reading", cascade = CascadeType.PERSIST)
-	private List<ImageURL> imageURL;
+	private List<Photos> imageURL;
 
 }
