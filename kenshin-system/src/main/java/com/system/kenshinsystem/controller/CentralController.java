@@ -1,17 +1,23 @@
 package com.system.kenshinsystem.controller;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +28,8 @@ import com.system.kenshinsystem.dto.ReadingDTO;
 import com.system.kenshinsystem.mapper.ReadingMapper;
 import com.system.kenshinsystem.model.Building;
 import com.system.kenshinsystem.model.Floor;
+import com.system.kenshinsystem.model.Photos;
+import com.system.kenshinsystem.model.ReadingDate;
 import com.system.kenshinsystem.model.Readings;
 import com.system.kenshinsystem.model.Tenant;
 import com.system.kenshinsystem.service.BuildingService;
@@ -59,10 +67,25 @@ public class CentralController {
 	}
 	
 	@GetMapping("/latest_date")
-	public String getLatestDayForBuilding(@RequestParam(name = "building_name",required = false)String buildingName) {
+	public ResponseEntity<?> getLatestDayForBuilding(@RequestParam(name = "building_name",required = false)String buildingName) {
 		
 		LocalDate latestDate = this.readingDateService.getLatestDateByBuildingName(buildingName);
-		return latestDate.getYear()+"-"+Integer.toString(latestDate.getMonthValue()+1);
+		latestDate = latestDate.plusMonths(1);
+		return ResponseEntity.ok(latestDate);
+		//return latestDate.getYear()+"-"+Integer.toString(latestDate.getMonthValue()+1);
+	}
+	@GetMapping("/reading_dates")
+	public ResponseEntity<?> getReadingDatesForBuilding(@RequestParam(name = "building_name",required = false)String buildingName){
+		
+		List<ReadingDate> readingDateObjs = this.readingDateService.getReadingDateByBuildingName(buildingName);
+		if(readingDateObjs == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+							.body("Error: Not Found.");
+		}
+		List<LocalDate> readingDates =  readingDateObjs.stream()
+									.map(ReadingDate :: getDate)
+									.collect(Collectors.toList());
+		return ResponseEntity.ok(readingDates);
 	}
 	
 	@GetMapping("/building_names")
@@ -71,7 +94,8 @@ public class CentralController {
 		List<Building> buildings =  this.buildingService.getBuildingNames();
 		List<String> buildingNames = new ArrayList<>();		
 		if(buildings == null) {
-			return null;
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("Error: Not Found.");
 		}
 		for(Building x : buildings) {			
 			buildingNames.add(x.getName());		
@@ -80,31 +104,33 @@ public class CentralController {
 	}
 	
 	@GetMapping("/floors")
-	public List<String> getFloorListByBldName(@RequestParam(name = "building_name",required = false)String buildingName) {
+	public ResponseEntity<?> getFloorListByBldName(@RequestParam(name = "building_name",required = false)String buildingName) {
 		
 		List<Floor> floors = this.floorService.getFloorListByBuildingName(buildingName);
 		List<String> floorNames = new ArrayList<>();
 		if(floors == null) {
-			return null;
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("Error: Not Found.");
 		}
 		for(Floor x : floors) {			
 			floorNames.add(x.getName());		
 		}
-		return floorNames;		
+		return ResponseEntity.ok(floorNames);		
 	}
 	
 	@GetMapping("/tenants")
-	public List<String> getTenantListByBldName(@RequestParam(name = "building_name",required = false)String buildingName){
+	public ResponseEntity<?> getTenantListByBldName(@RequestParam(name = "building_name",required = false)String buildingName){
 		
 		List<String> tenants = this.tenantService.getTenantListByBuildingName(buildingName);		
 		if(tenants == null) {
-			return null;
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("Error: Not Found.");
 		}		
-		return tenants;	
+		return ResponseEntity.ok(tenants);	
 	}
 	
-	@GetMapping("/readings")
-	public ReadingDTO getFloorReadings(@RequestParam(name = "building_name",required = false)String buildingName,
+	@GetMapping("floor/reading")
+	public ReadingDTO getFloorReading(@RequestParam(name = "building_name",required = false)String buildingName,
 		@RequestParam(name = "reading_date",required = false)LocalDate readingDate,
 		@RequestParam(name = "floor_name",required = false)String floorName){
 		
@@ -113,10 +139,60 @@ public class CentralController {
 		return ReadingMapper.mapToReadingDTO(readings);
 		
 	}
+	@PutMapping("floor/update_readings")
+	public ResponseEntity<String> updateFloorReadings(@RequestParam(name = "building_name",required = false)String buildingName,
+			@RequestParam(name = "reading_date",required = false)LocalDate readingDate,
+			@RequestParam(name = "floor_name",required = false)String floorName,@RequestBody ReadingDTO readingDTO){
+		
+		String message = this.readingsService.updateReadings(buildingName, readingDate, floorName, readingDTO);
+		if(message == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("Error: Readings do not exist.");
+		}
+		return ResponseEntity.ok(message);
+	}
+	//this will be passed into CH01
+	@GetMapping("floor/past_readings")
+	public ResponseEntity<?> getFloorReadings(@RequestParam(name = "building_name",required = false)String buildingName,
+			@RequestParam(name = "reading_date",required = false)LocalDate readingDate){
+		
+		LinkedHashMap<String,Readings> floorReadingsMap = this.readingsService.getReadings(buildingName, readingDate);
+		if(floorReadingsMap == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("Error: Readings do not exist.");
+		}
+		LinkedHashMap<String,ReadingDTO> floorReadingDTOMap = new LinkedHashMap<>();
+		for(Map.Entry<String,Readings> x : floorReadingsMap.entrySet()) {
+			floorReadingDTOMap.put(x.getKey(),ReadingMapper.mapToReadingDTO(x.getValue()));
+		}
+		return ResponseEntity.ok(floorReadingDTOMap);
+	}
+	//end point for getting readings for each floor from the past and converting into readings for each tenant
+	//this will be passed into CS01
+	@GetMapping("tenant/past_readings")
+	public ResponseEntity<?> getTenantReadings(@RequestParam(name = "building_name",required = false)String buildingName,
+																	@RequestParam(name = "reading_date",required = false)LocalDate readingDate){
+		LinkedHashMap<String,ReadingDTO> tenant_reading_map = new LinkedHashMap<>();		
+		List<String> floor_tenants = this.tenantService.getTenantListByBuildingName(buildingName);
+			
+		//get a list of floor_tenant and iterate through each
+		for(String floor_tenant : floor_tenants) {			
+			//substring floor_name・tenant_name format into tenant_name
+			String tenantName = floor_tenant.substring(floor_tenant.indexOf("・")+1);			
+			Tenant tenant = this.tenantService.findByTenantName(tenantName);
+			//find reading from DB for the floor that tenant occupies
+			Readings readings = this.readingsService.getReadings(buildingName, readingDate, tenant.getFloor().getName());			
+			//will multiply each reading with this area ratio to get reading for each tenant
+			Double areaRatio = this.tenantService.getAreaRatio(tenantName);			
+			ReadingDTO readingDTO = ReadingMapper.mapToTenantReadingDTO(readings, areaRatio);			
+			tenant_reading_map.put(floor_tenant, readingDTO);
+		}		
+		return ResponseEntity.ok(tenant_reading_map);
+	}
 	@PostMapping("/temporary/save_readings")
 	public void storeReadingsInTempMap(@RequestBody ReadingDTO readingDTO) {
 		
-		tempMapService.addReading(readingDTO);
+		this.tempMapService.addReading(readingDTO);
 	}
 	@PostMapping("/temporary/save_comments")
 	public void storeComments(@RequestParam(name = "building_name",required = false)String buildingName,
@@ -129,12 +205,16 @@ public class CentralController {
 	}
 	//end point for converting readings for each floor from temporary storage into readings for each tenant
 	//this will be passed to CS01
-	@GetMapping("/temporary/get_readings")
-	public ResponseEntity<?> getReadingsFromTempMap(@RequestParam(name = "building_name", required = false)String buildingName) {
-		
-		LinkedHashMap<String,ReadingDTO> tenant_reading_map = new LinkedHashMap<>();		
+	@GetMapping("/temporary/tenant/get_readings")
+	public ResponseEntity<?> getTenantReadingsFromTempMap(@RequestParam(name = "building_name", required = false)String buildingName) {
+			
 		//will get all the readings for all floors of a building
 		LinkedHashMap<String,ReadingDTO> floor_reading_map = (LinkedHashMap<String, ReadingDTO>) this.tempMapService.getReadingsForBuilding(buildingName);
+		if(floor_reading_map == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+							.body("Error: Readings do no exist:");
+		}
+		LinkedHashMap<String,ReadingDTO> tenant_reading_map = new LinkedHashMap<>();	
 		List<String> floor_tenants = this.tenantService.getTenantListByBuildingName(buildingName);		
 		//get a list of floor_tanant and iterate through each
 		for(String floor_tenant : floor_tenants) {
@@ -151,6 +231,16 @@ public class CentralController {
 		}
 		return ResponseEntity.ok(tenant_reading_map);
 		
+	}
+	//this will be passed into CH01
+	@GetMapping("/temporary/floor/get_readings")
+	public ResponseEntity<?> getFloorReadingsFromTempMap(@RequestParam(name = "building_name",required = false)String buildingName) {
+		LinkedHashMap<String,ReadingDTO> floor_reading_map = (LinkedHashMap<String, ReadingDTO>) this.tempMapService.getReadingsForBuilding(buildingName);
+		if(floor_reading_map == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+							.body("Error: Readings do no exist:");
+		}
+		return ResponseEntity.ok(floor_reading_map);
 	}
 	
 	@GetMapping("/temporary/check")
@@ -171,30 +261,32 @@ public class CentralController {
 		}
 		return newList;
 	}
-	
-	//end point for getting readings for each floor from the past and converting into readings for each tenant
-	//this will be passed into CS01
-	@GetMapping("/past_readings")
-	public ResponseEntity<?> getAllReadingsFromPast(@RequestParam(name = "building_name",required = false)String buildingName,
-																@RequestParam(name = "reading_date",required = false)LocalDate readingDate){
-		LinkedHashMap<String,ReadingDTO> tenant_reading_map = new LinkedHashMap<>();		
-		List<String> floor_tenants = this.tenantService.getTenantListByBuildingName(buildingName);
+	//End point for image downloads
+	@GetMapping("/images/download")
+	public ResponseEntity<?> getImages(@RequestParam(name = "file_name",required = false)String fileName){
 		
-		//get a list of floor_tanant and iterate through each
-		for(String floor_tenant : floor_tenants) {			
-			//substring floor_name・tenant_name format into tenant_name
-			String tenantName = floor_tenant.substring(floor_tenant.indexOf("・")+1);			
-			Tenant tenant = this.tenantService.findByTenantName(tenantName);
-			//find reading from DB for the floor that tenant occupies
-			Readings readings = this.readingsService.getReadings(buildingName, readingDate, tenant.getFloor().getName());			
-			//will multiply each reading with this area ratio to get reading for each tenant
-			Double areaRatio = this.tenantService.getAreaRatio(tenantName);			
-			ReadingDTO readingDTO = ReadingMapper.mapToTenantReadingDTO(readings, areaRatio);			
-			tenant_reading_map.put(floor_tenant, readingDTO);
-		}		
-		return ResponseEntity.ok(tenant_reading_map);
+		try {
+			Photos photos = this.photoService.getImages(fileName);
+			if(photos == null) {
+				System.out.println("XXXXXXXXXXXXXX");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found.");
+			}
+			
+			Path path = Paths.get(photos.getImageURL());
+			byte[] bytes = Files.readAllBytes(path);
+			System.out.println("*************************");
+			System.out.println(bytes);
+			return ResponseEntity.ok()
+								.contentType(MediaType.valueOf(photos.getType()))
+								.body(bytes);	
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
-	//End points for image uploads downloads
+	
+	//End point for image uploads
 	@PostMapping("/images/upload")
 	public ResponseEntity<String> storeImages(@RequestParam("image")MultipartFile image){
 		try {
@@ -206,7 +298,18 @@ public class CentralController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BAD_REQUEST"+e.getMessage());
 		}
 	}
-	
+	//End point for image updates
+		@PutMapping("/images/upload")
+		public ResponseEntity<String> updateImages(@RequestParam("image")MultipartFile image){
+			try {
+				String imageURL = this.photoService.updateImages(image);
+				return ResponseEntity.status(HttpStatus.OK).body(imageURL);
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BAD_REQUEST"+e.getMessage());
+			}
+		}
 	
 	
 	

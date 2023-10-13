@@ -55,4 +55,13 @@ public class ReadingDateServiceImpl implements ReadingDateService{
 		}
 	}
 
+	@Override
+	public List<ReadingDate> getReadingDateByBuildingName(String buildingName) {
+		
+		Building building = buildingService.findByBuildingName(buildingName);
+		List<ReadingDate> readingDates = this.readingDateRepository.findByBuildingId(building.getId());
+		
+		return readingDates;
+	}
+
 }

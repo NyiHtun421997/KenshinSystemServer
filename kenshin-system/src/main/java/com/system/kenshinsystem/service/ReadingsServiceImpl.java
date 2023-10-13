@@ -1,11 +1,13 @@
 package com.system.kenshinsystem.service;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.system.kenshinsystem.dto.ReadingDTO;
 import com.system.kenshinsystem.model.Building;
 import com.system.kenshinsystem.model.Floor;
 import com.system.kenshinsystem.model.ReadingDate;
@@ -39,6 +41,47 @@ public class ReadingsServiceImpl implements ReadingsService{
 		
 		return this.readingsRepository.findByFloorIdAndReadingDateId(floor.getId(), readingDate.getId());
 		
+	}
+	
+	@Override
+	public LinkedHashMap<String, Readings> getReadings(String buildingName, LocalDate date){
+		
+		LinkedHashMap<String,Readings> floorReadingsMap = new LinkedHashMap<>();
+		Building building = this.buildingService.findByBuildingName(buildingName);
+		ReadingDate readingDate = this.readingDateService.findByReadingDate(date);
+		List<Floor> floors = building.getFloors();
+		
+		for(Floor floor : floors) {
+			floorReadingsMap.put(floor.getName(),this.readingsRepository.findByFloorIdAndReadingDateId(floor.getId(), readingDate.getId()));
+		}
+		return floorReadingsMap;
+	}
+
+	@Override
+	public String updateReadings(String buildingName, LocalDate readingDate, String floorName, ReadingDTO readingDTO) {
+		
+		Readings readings = getReadings(buildingName,readingDate,floorName);
+		if(readings == null) {
+			return null;
+		}
+		
+		Double[] readingsDouble = readingDTO.getReadings();
+		Double[] reaingsBeforeChangeDouble = readingDTO.getReadingsBeforeChange();
+		
+		readings.setLightingReading(readingsDouble[0]);
+		readings.setPowerReading(readingsDouble[1]);
+		readings.setWaterReading(readingsDouble[2]);
+		readings.setGasReading(readingsDouble[3]);
+		
+		readings.setLightingReadingBeforeChange(reaingsBeforeChangeDouble[0]);
+		readings.setPowerReadingBeforeChange(reaingsBeforeChangeDouble[1]);
+		readings.setWaterReadingBeforeChange(reaingsBeforeChangeDouble[2]);
+		readings.setGasReadingBeforeChange(reaingsBeforeChangeDouble[3]);
+		
+		readings.setComment(readingDTO.getComment());
+		
+		this.readingsRepository.save(readings);
+		return "Readings updated successfully.";
 	}
 
 }

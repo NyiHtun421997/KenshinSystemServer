@@ -3,9 +3,35 @@ package com.system.kenshinsystem.mapper;
 import java.time.LocalDate;
 
 import com.system.kenshinsystem.dto.ReadingDTO;
+import com.system.kenshinsystem.model.Floor;
+import com.system.kenshinsystem.model.ReadingDate;
 import com.system.kenshinsystem.model.Readings;
 
 public class ReadingMapper {
+	
+	public static Readings mapToReadings(ReadingDTO readingDTO,Floor floor,ReadingDate readingDate) {
+		
+		Readings readings = new Readings();
+		Double[] readingsDouble = readingDTO.getReadings();
+		Double[] reaingsBeforeChangeDouble = readingDTO.getReadingsBeforeChange();
+		
+		readings.setLightingReading(readingsDouble[0]);
+		readings.setPowerReading(readingsDouble[1]);
+		readings.setWaterReading(readingsDouble[2]);
+		readings.setGasReading(readingsDouble[3]);
+		
+		readings.setLightingReadingBeforeChange(reaingsBeforeChangeDouble[0]);
+		readings.setPowerReadingBeforeChange(reaingsBeforeChangeDouble[1]);
+		readings.setWaterReadingBeforeChange(reaingsBeforeChangeDouble[2]);
+		readings.setGasReadingBeforeChange(reaingsBeforeChangeDouble[3]);
+		
+		readings.setComment(readingDTO.getComment());
+		
+		readings.setFloor(floor);
+		readings.setReadingDate(readingDate);
+		
+		return readings;
+	}
 	
 	public static ReadingDTO mapToReadingDTO(Readings readings) {
 		
@@ -56,5 +82,4 @@ public static ReadingDTO floorToTenantReadingDTO(ReadingDTO readingDTO,Double ar
 		
 	}
 	
-
 }
