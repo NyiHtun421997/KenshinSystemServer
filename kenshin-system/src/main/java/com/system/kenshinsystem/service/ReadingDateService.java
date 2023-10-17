@@ -10,5 +10,6 @@ public interface ReadingDateService {
 	LocalDate getLatestDateByBuildingName(String buildingName);
 	ReadingDate findByReadingDate(LocalDate readingDate);
 	List<ReadingDate> getReadingDateByBuildingName(String buildingName);
+	ReadingDate createReadingDate(LocalDate readingDate,String buildingName);
 
 }

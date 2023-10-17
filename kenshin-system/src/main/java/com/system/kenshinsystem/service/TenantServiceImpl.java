@@ -40,17 +40,19 @@ public class TenantServiceImpl implements TenantService{
 		return tenantsToReturn;
 	}
 	@Override
-	public Double getAreaRatio(String tenantName) {
+	public Double getAreaRatio(String tenantName,String floorName,String buildingName) {
 		
-		Tenant tenant = this.tenantRepository.findByName(tenantName);
-		Floor floor = tenant.getFloor();
+		Building building = this.buildingService.findByBuildingName(buildingName);
+		Floor floor = this.floorService.findFloorByNameAndBuildingId(floorName, building.getId());
+		Tenant tenant = this.tenantRepository.findByNameAndFloorId(tenantName, floor.getId());
 		return tenant.getArea()/floor.getArea();
 	}
 	
 	@Override
-	public Tenant findByTenantName(String tenantName) {
-		
-		return this.tenantRepository.findByName(tenantName);
+	public Tenant findByFloorNameAndBuildingId(String tenantName,String floorName,String buildingName) {
+		Building building = this.buildingService.findByBuildingName(buildingName);
+		Floor floor = this.floorService.findFloorByNameAndBuildingId(floorName, building.getId());
+		return this.tenantRepository.findByNameAndFloorId(tenantName, floor.getId());
 	}
 
 }

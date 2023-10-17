@@ -40,8 +40,9 @@ public class ReadingMapper {
 		String buildingName = readings.getFloor().getBuilding().getName();
 		String floorName = readings.getFloor().getName();
 		LocalDate readingDate = readings.getReadingDate().getDate();
+		String comment = readings.getComment();
 		
-		ReadingDTO readingDTO = new ReadingDTO( readingsArray,readingsBeforeChangeArray,buildingName,floorName,readingDate,"");
+		ReadingDTO readingDTO = new ReadingDTO( readingsArray,readingsBeforeChangeArray,buildingName,floorName,readingDate,comment);
 												
 		return readingDTO;
 		
@@ -54,8 +55,9 @@ public class ReadingMapper {
 		String buildingName = readings.getFloor().getBuilding().getName();
 		String floorName = readings.getFloor().getName();
 		LocalDate readingDate = readings.getReadingDate().getDate();
+		String comment = readings.getComment();
 		
-		ReadingDTO readingDTO = new ReadingDTO( readingsArray,readingsBeforeChangeArray,buildingName,floorName,readingDate,"");
+		ReadingDTO readingDTO = new ReadingDTO( readingsArray,readingsBeforeChangeArray,buildingName,floorName,readingDate,comment);
 												
 		return readingDTO;
 		
@@ -75,8 +77,9 @@ public static ReadingDTO floorToTenantReadingDTO(ReadingDTO readingDTO,Double ar
 		String buildingName = readingDTO.getBuildingName();
 		String floorName = readingDTO.getFloorName();
 		LocalDate readingDate = readingDTO.getReadingDate();
+		String comment = readingDTO.getComment();
 		
-		ReadingDTO newReadingDTO = new ReadingDTO( newReadings,newReadingsBeforeChange,buildingName,floorName,readingDate,"");
+		ReadingDTO newReadingDTO = new ReadingDTO( newReadings,newReadingsBeforeChange,buildingName,floorName,readingDate,comment);
 												
 		return newReadingDTO;
 		

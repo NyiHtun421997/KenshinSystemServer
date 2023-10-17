@@ -9,6 +9,7 @@ import com.system.kenshinsystem.model.Tenant;
 public interface TenantRepository extends JpaRepository<Tenant,Long>{
 	
 	List<Tenant>findByFloorId(Long Id);
-	Tenant findByName(String tenantName);
+
+	Tenant findByNameAndFloorId(String tenantName,Long floor_id);
 
 }

@@ -8,8 +8,8 @@ public interface TenantService {
 	
 	List<String> getTenantListByBuildingName(String buildingName);
 	
-	Double getAreaRatio(String tenantName);
+	Double getAreaRatio(String tenantName,String floorName,String buildingName);
 	
-	Tenant findByTenantName(String tenantName);
+	Tenant findByFloorNameAndBuildingId(String tenantName,String floorName,String buildingName);
 
 }

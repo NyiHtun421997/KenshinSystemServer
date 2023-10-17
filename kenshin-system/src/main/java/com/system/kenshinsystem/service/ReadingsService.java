@@ -11,5 +11,6 @@ public interface ReadingsService {
 	Readings getReadings(String buildingName,LocalDate readingDate,String floorName);
 	LinkedHashMap<String,Readings> getReadings(String buildingName,LocalDate readingDate);
 	String updateReadings(String buildingName, LocalDate readingDate, String floorName, ReadingDTO readingDTO);
+	String storeReadings(LinkedHashMap<String,ReadingDTO> floorMap,String buildingName,LocalDate readingDate);
 
 }

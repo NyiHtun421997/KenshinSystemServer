@@ -39,7 +39,6 @@ public class TempMapService {
 		
         // Add or update the DTO reading for the floor		
         floorMap.put(floorName, reading);
-        System.out.println(reading);
     }		
 		
     public Map<String, Map<String, ReadingDTO>> getAllReadings() {	
@@ -77,26 +76,22 @@ public class TempMapService {
     	LinkedHashMap<String,String> commentDataForFloor = new LinkedHashMap<>();
     	//converting comments for each tenant to comments for each floor
     	//comments of tenants in the same floor are combined
-    	
     	for(Map.Entry<String, String> x : commentData.entrySet()) {
     		
-    		//Testing
-    		System.out.println(x.getKey()+" "+x.getValue());
-    		String floor = x.getKey(); // this will be floor・tenant format
+    		String floor = x.getKey(); // this will be floor・tenant format		
     		floor = floor.substring(0,floor.indexOf("・"));
-    		System.out.println(floor);
-    		if(commentDataForFloor.containsKey(floor)) {
-    			//for tenants of the same floor
-    			String existingCmt = commentDataForFloor.get(floor);
-    			System.out.println(existingCmt);
-    			String newCmt = existingCmt+"【"+x.getKey()+"】\n"+x.getValue()+"\n";
-    			System.out.println(newCmt);
-    			
-    			commentDataForFloor.put(floor, newCmt);
-    		}
-    		else {
-    			commentDataForFloor.put(floor, "【"+x.getKey()+"】\n"+x.getValue()+"\n");
-    		}
+    		if(x.getKey()!= null && x.getValue()!=null && x.getValue()!="") {
+    			if(commentDataForFloor.containsKey(floor)) {    			
+        			//for tenants of the same floor
+            		String existingCmt = commentDataForFloor.get(floor);
+            		String newCmt = existingCmt+"\n***************\n【"+x.getKey()+"】\n"+x.getValue()+"\n";	
+            		commentDataForFloor.put(floor, newCmt);
+        			
+        		}
+        		else { 
+        			commentDataForFloor.put(floor, "【"+x.getKey()+"】\n"+x.getValue());
+        		}	
+    		}   		
     	}
     	//store each comments inside Map to each readingDTO obj
     	// Get the inner map for the building		
@@ -104,9 +99,41 @@ public class TempMapService {
         Map<String, ReadingDTO> floorMap = bld_floorMap.get(buildingKey);
         
         for(String x : floorMap.keySet()) {
-        	
-        	floorMap.get(x).setComment(commentDataForFloor.get(x));
+        	String originalComment = floorMap.get(x).getComment();
+        	String newComment = commentDataForFloor.get(x);
+        	if(newComment!=null) {
+        		originalComment = originalComment + "\n***************\n"+newComment;
+            	floorMap.get(x).setComment(originalComment);
+        	}	
         }
+    }
+    //method to approve readings stored in temporary map
+    public  LinkedHashMap<String, ReadingDTO> approveReadings(String buildingName) {
+    	// Get the inner map for the building		
+    	BuildingKey buildingKey = new BuildingKey(buildingName);
+    	for(BuildingKey x :  bld_floorMap.keySet()) {
+    		if(x.equals(buildingKey))
+    		buildingKey = x; break;
+    	}
+    	//check the boolean fields of buildingKey obj
+    	if(buildingKey.getFirstChecked()) {
+    		if(buildingKey.getSecondChecked()) {
+    			buildingKey.setApproved(true);
+    		}
+    		else 
+    			buildingKey.setSecondChecked(true);
+    	}
+    	else
+    		buildingKey.setFirstChecked(true);
+    	Map<String, ReadingDTO> floorMap = bld_floorMap.get(buildingKey);
+    	bld_floorMap.replace(buildingKey, floorMap);
+    	
+    	if(buildingKey.getFirstChecked() == true && buildingKey.getSecondChecked() == true && buildingKey.getApproved() == true) {
+    		//clearing the reading data from TempMap
+    		bld_floorMap.remove(buildingKey, floorMap);
+    		return (LinkedHashMap<String, ReadingDTO>) floorMap;
+    	}
+    	else return null; 	
     }
 		
 		

@@ -3,11 +3,13 @@ package com.system.kenshinsystem.service;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.system.kenshinsystem.dto.ReadingDTO;
+import com.system.kenshinsystem.mapper.ReadingMapper;
 import com.system.kenshinsystem.model.Building;
 import com.system.kenshinsystem.model.Floor;
 import com.system.kenshinsystem.model.ReadingDate;
@@ -77,11 +79,30 @@ public class ReadingsServiceImpl implements ReadingsService{
 		readings.setPowerReadingBeforeChange(reaingsBeforeChangeDouble[1]);
 		readings.setWaterReadingBeforeChange(reaingsBeforeChangeDouble[2]);
 		readings.setGasReadingBeforeChange(reaingsBeforeChangeDouble[3]);
+	
+		String newComment = readingDTO.getComment();
+		if(newComment!="" && newComment!=null) {
 		
-		readings.setComment(readingDTO.getComment());
-		
+			readings.setComment(newComment);
+		}
+		else readings.setComment("");
 		this.readingsRepository.save(readings);
 		return "Readings updated successfully.";
+	}
+	@Override
+	public String storeReadings(LinkedHashMap<String,ReadingDTO> floorMap, String buildingName,LocalDate readingDate) {
+		
+		ReadingDate newReadingDate = this.readingDateService.createReadingDate(readingDate,buildingName);
+		for(Map.Entry<String, ReadingDTO> x : floorMap.entrySet()) {
+			Building building = this.buildingService.findByBuildingName(buildingName);
+			Floor floor = this.floorService.findFloorByNameAndBuildingId(x.getKey(),building.getId());
+			//needs to create a new record in reading date entity
+			
+			Readings readings = ReadingMapper.mapToReadings(x.getValue(), floor, newReadingDate);
+			
+			this.readingsRepository.save(readings);
+		}
+		return "Readings stored successfully.";
 	}
 
 }

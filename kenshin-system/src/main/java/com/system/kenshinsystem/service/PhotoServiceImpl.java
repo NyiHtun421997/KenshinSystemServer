@@ -77,11 +77,8 @@ public class PhotoServiceImpl implements PhotoService {
 	public Photos getImages(String fileName) throws UnsupportedEncodingException {
 		
 		String decodedFileName = URLDecoder.decode(fileName, "UTF-8");
-		System.out.println("*************************");
-		System.out.println(decodedFileName);
 		Optional<Photos> photos = this.photoRepository.findByName(decodedFileName);
 		if(!photos.isEmpty()) {
-			System.out.println("*************************");
 			
 			return photos.get();
 		}

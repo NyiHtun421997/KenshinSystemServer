@@ -64,4 +64,15 @@ public class ReadingDateServiceImpl implements ReadingDateService{
 		return readingDates;
 	}
 
+	@Override
+	public ReadingDate createReadingDate(LocalDate readingDate,String buildingName) {
+		
+		ReadingDate newReadingDate = new ReadingDate();
+		Building building = this.buildingService.findByBuildingName(buildingName);
+		newReadingDate.setDate(readingDate);
+		newReadingDate.setBuilding(List.of(building));
+		this.readingDateRepository.save(newReadingDate);
+		return newReadingDate;
+	}
+
 }

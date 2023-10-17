@@ -1,4 +1,4 @@
-package com.system.kenshinsystem.config;
+/*package com.system.kenshinsystem.config;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -385,4 +385,4 @@ public class config {
 		};
 	}
 
-}
+}*/

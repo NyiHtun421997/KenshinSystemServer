@@ -37,6 +37,9 @@ public class Floor {
 	@Column(nullable = true)
 	private Double area;
 	
+	@Column(nullable = true)
+	private Boolean isParent;
+	
 	@ManyToOne
 	@JoinColumn(name = "building_id")
 	private Building building;
