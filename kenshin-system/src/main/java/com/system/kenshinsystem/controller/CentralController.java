@@ -1,9 +1,5 @@
 package com.system.kenshinsystem.controller;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,8 +9,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,13 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.system.kenshinsystem.dto.ReadingDTO;
 import com.system.kenshinsystem.mapper.ReadingMapper;
 import com.system.kenshinsystem.model.Building;
 import com.system.kenshinsystem.model.Floor;
-import com.system.kenshinsystem.model.Photos;
 import com.system.kenshinsystem.model.ReadingDate;
 import com.system.kenshinsystem.model.Readings;
 import com.system.kenshinsystem.model.Tenant;
@@ -50,7 +43,6 @@ public class CentralController {
 	private final TenantService tenantService;
 	private final ReadingsService readingsService;
 	private final TempMapService tempMapService;
-	private final PhotoService photoService;
 	
 	@Autowired
 	public CentralController(ReadingDateService readingDateService,BuildingService buildingService,
@@ -63,7 +55,6 @@ public class CentralController {
 		this.tenantService = tenantService;
 		this.readingsService = readingsService;
 		this.tempMapService = tempMapService;
-		this.photoService = photoService;
 	}
 	
 	@GetMapping("/latest_date")
@@ -136,8 +127,7 @@ public class CentralController {
 		
 		Readings readings = this.readingsService.getReadings(buildingName, readingDate, floorName);
 		
-		return ReadingMapper.mapToReadingDTO(readings);
-		
+		return ReadingMapper.mapToReadingDTO(readings);	
 	}
 	@PutMapping("floor/update_readings")
 	public ResponseEntity<String> updateFloorReadings(@RequestParam(name = "building_name",required = false)String buildingName,
@@ -266,61 +256,23 @@ public class CentralController {
 		}
 		return newList;
 	}
-	//End point for image downloads
-	@GetMapping("/images/download")
-	public ResponseEntity<?> getImages(@RequestParam(name = "file_name",required = false)String fileName){
-		
-		try {
-			Photos photos = this.photoService.getImages(fileName);
-			if(photos == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found.");
-			}
-			
-			Path path = Paths.get(photos.getImageURL());
-			byte[] bytes = Files.readAllBytes(path);
-			return ResponseEntity.ok()
-								.contentType(MediaType.valueOf(photos.getType()))
-								.body(bytes);	
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 	
-	//End point for image uploads
-	@PostMapping("/images/upload")
-	public ResponseEntity<String> storeImages(@RequestParam("image")MultipartFile image){
-		try {
-			String imageURL = this.photoService.storeImages(image);
-			return ResponseEntity.status(HttpStatus.OK).body(imageURL);
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BAD_REQUEST"+e.getMessage());
-		}
-	}
-	//End point for image updates
-		@PutMapping("/images/upload")
-		public ResponseEntity<String> updateImages(@RequestParam("image")MultipartFile image){
-			try {
-				String imageURL = this.photoService.updateImages(image);
-				return ResponseEntity.status(HttpStatus.OK).body(imageURL);
-			}
-			catch(IOException e) {
-				e.printStackTrace();
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BAD_REQUEST"+e.getMessage());
-			}
-		}
-		@PostMapping("/temporary/approve")
-		public void approve(@RequestParam(name = "building_name",required = false)String buildingName,
-				@RequestParam(name = "reading_date",required = false)LocalDate readingDate){
+	
+	@PostMapping("/temporary/final_approve")
+	@PreAuthorize("hasRole('ROLE_MANAGER')")
+	public void finalApprove(@RequestParam(name = "building_name",required = false)String buildingName,
+			@RequestParam(name = "reading_date",required = false)LocalDate readingDate){	
 			
 			if(this.tempMapService.doesBuildingDataExist(buildingName)) {
-				//get floorMap and save them to DB
-				LinkedHashMap<String, ReadingDTO> floorMap = this.tempMapService.approveReadings(buildingName);
-				if(floorMap!=null)
-				this.readingsService.storeReadings(floorMap, buildingName, readingDate);
-			}
+			//get floorMap and save them to DB
+			LinkedHashMap<String, ReadingDTO> floorMap = this.tempMapService.finalApproveReadings(buildingName);
+			if(floorMap!=null)
+			this.readingsService.storeReadings(floorMap, buildingName, readingDate);
 		}
+	}
+	@PostMapping("/temporary/approve")
+	public void approve(@RequestParam(name = "building_name",required = false)String buildingName,
+			@RequestParam(name = "reading_date",required = false)LocalDate readingDate){
+		this.tempMapService.approveReadings(buildingName);
+	}
 }

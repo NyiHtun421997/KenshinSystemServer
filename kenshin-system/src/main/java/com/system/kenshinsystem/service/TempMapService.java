@@ -108,7 +108,7 @@ public class TempMapService {
         }
     }
     //method to approve readings stored in temporary map
-    public  LinkedHashMap<String, ReadingDTO> approveReadings(String buildingName) {
+    public  LinkedHashMap<String, ReadingDTO> finalApproveReadings(String buildingName) {
     	// Get the inner map for the building		
     	BuildingKey buildingKey = new BuildingKey(buildingName);
     	for(BuildingKey x :  bld_floorMap.keySet()) {
@@ -135,8 +135,21 @@ public class TempMapService {
     	}
     	else return null; 	
     }
-		
-		
+	public void approveReadings(String buildingName) {
+		// Get the inner map for the building		
+    	BuildingKey buildingKey = new BuildingKey(buildingName);
+    	for(BuildingKey x :  bld_floorMap.keySet()) {
+    		if(x.equals(buildingKey))
+    		buildingKey = x; break;
+    	}
+    	//check the boolean fields of buildingKey obj
+    	if(buildingKey.getFirstChecked()) 
+    		buildingKey.setSecondChecked(true);
+    	else
+    		buildingKey.setFirstChecked(true);
+    	Map<String, ReadingDTO> floorMap = bld_floorMap.get(buildingKey);
+    	bld_floorMap.replace(buildingKey, floorMap);
+	}
 }
 //Building Class that will serve as a key value for outer map
 @Getter
