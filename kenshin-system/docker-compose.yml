@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  ## Postgres DB
+  postgres-kenshin:
+    container_name: postgres-kenshin
+    image: postgres
+    environment:
+      POSTGRES_DB: kenshin
+      POSTGRES_USER: ADMIN
+      POSTGRES_PASSWORD: ADMIN
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-kenshin:/data/postgres
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    command: -p 5432
+    restart: always
+    
+  ## Kenshin-Server Docker Compose Config
+  kenshin-server:
+    container_name: kenshin-server
+    image: nyihtun42/kenshin-server:13
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-kenshin:5432/kenshin
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres-kenshin

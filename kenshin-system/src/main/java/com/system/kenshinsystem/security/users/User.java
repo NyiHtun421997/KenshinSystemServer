@@ -14,7 +14,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,8 +29,7 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails{
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="_user_seq")
-	@SequenceGenerator(name="_user_seq",sequenceName="_user_seq",allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	@Column(unique = true)
 	private String username;

@@ -1,0 +1,4 @@
+id,username,password,role
+1,daikyo_ofc@gmail.com,$2a$12$VcBqi7MEKGZynu66xB8wVOaIAll2oaCegqi.VD39jf7XXS7BurTPe,MANAGER
+2,nyihtuun@gmail.com,$2a$12$zjiG0uwJgvGpHvd/m.crReSOSKKo/V4zW0pEvVadJpdGi6q6/Ygnu,ADMIN
+3,ofc_nyihtun@gmail.com,$2a$12$MoA3buEtdY7vxc6NAZUx5O6queMD6kA6FmXztywBzLG3t9zlH30Zq,USER
