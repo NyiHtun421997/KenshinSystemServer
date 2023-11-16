@@ -26,19 +26,16 @@ public class FloorServiceImpl implements FloorService{
 	@Override
 	public Floor findFloorByNameAndBuildingId(String name, Long buildingId) {
 		
-		Optional<Floor> floorOptional = this.floorRepository.findByNameAndBuildingId(name, buildingId);
-		if(floorOptional.isPresent()) {
-			
-			return floorOptional.get();
-		}
-		else return null;
+		return this.floorRepository.findByNameAndBuildingId(name, buildingId)
+					.orElseThrow(() -> new NullPointerException("Floor might not exist."));
 	}
 
 	@Override
 	public List<Floor> getFloorListByBuildingName(String buldingName) {
 		
 		Building building = this.buildingService.findByBuildingName(buldingName);
-		return this.floorRepository.findByBuildingId(building.getId());
+		return this.floorRepository.findByBuildingId(building.getId())
+									.orElseThrow(() -> new NullPointerException("Floor might not exist."));
 		
 	}
 

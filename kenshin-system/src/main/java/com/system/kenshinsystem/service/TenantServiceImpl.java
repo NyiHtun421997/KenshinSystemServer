@@ -2,6 +2,8 @@ package com.system.kenshinsystem.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,24 +29,28 @@ public class TenantServiceImpl implements TenantService{
 
 	@Override
 	public List<String> getTenantListByBuildingName(String buildingName) {
-		
-		List<String> tenantsToReturn = new ArrayList<>();
+
 		List<Floor> floors = this.floorService.getFloorListByBuildingName(buildingName);
-		for(Floor floor : floors) {
-			List<Tenant> tenants = this.tenantRepository.findByFloorId(floor.getId());
-			for(Tenant x: tenants) {
-				tenantsToReturn.add(floor.getName() + "・" + x.getName());
-			}
-			
-		}
-		return tenantsToReturn;
+		return floors.stream()
+					.flatMap(floor -> mapToTenant(floor).stream())
+					.collect(Collectors.toList());
 	}
+	private List<String> mapToTenant(Floor floor) {
+		List<Tenant> tenants = this.tenantRepository.findByFloorId(floor.getId())
+									.orElseThrow(() -> new NullPointerException("Tenant might not exist."));
+		return tenants.stream()
+				.map(tenant -> floor.getName()+"・"+tenant.getName())
+				.collect(Collectors.toList());
+	}
+
+
 	@Override
 	public Double getAreaRatio(String tenantName,String floorName,String buildingName) {
 		
 		Building building = this.buildingService.findByBuildingName(buildingName);
 		Floor floor = this.floorService.findFloorByNameAndBuildingId(floorName, building.getId());
-		Tenant tenant = this.tenantRepository.findByNameAndFloorId(tenantName, floor.getId());
+		Tenant tenant = this.tenantRepository.findByNameAndFloorId(tenantName, floor.getId())
+							.orElseThrow(() -> new NullPointerException("Tenant might not exist."));
 		return tenant.getArea()/floor.getArea();
 	}
 	
@@ -52,7 +58,8 @@ public class TenantServiceImpl implements TenantService{
 	public Tenant findByFloorNameAndBuildingId(String tenantName,String floorName,String buildingName) {
 		Building building = this.buildingService.findByBuildingName(buildingName);
 		Floor floor = this.floorService.findFloorByNameAndBuildingId(floorName, building.getId());
-		return this.tenantRepository.findByNameAndFloorId(tenantName, floor.getId());
+		return this.tenantRepository.findByNameAndFloorId(tenantName, floor.getId())
+				.orElseThrow(() -> new NullPointerException("Tenant might not exist."));
 	}
 
 }

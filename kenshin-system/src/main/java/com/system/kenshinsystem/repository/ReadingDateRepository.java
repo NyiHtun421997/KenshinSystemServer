@@ -13,6 +13,6 @@ import com.system.kenshinsystem.model.ReadingDate;
 public interface ReadingDateRepository extends JpaRepository<ReadingDate,Long>{
 	
 	Optional<ReadingDate> findByDate(LocalDate readingDate);
-	List<ReadingDate> findByBuildingId(Long buildingId);
+	Optional<List<ReadingDate>> findByBuildingId(Long buildingId);
 
 }

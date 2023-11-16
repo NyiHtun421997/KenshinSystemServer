@@ -1,12 +1,15 @@
-/*package com.system.kenshinsystem.config;
+package com.system.kenshinsystem.config;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.system.kenshinsystem.model.Building;
 import com.system.kenshinsystem.model.Floor;
@@ -18,14 +21,22 @@ import com.system.kenshinsystem.repository.FloorRepository;
 import com.system.kenshinsystem.repository.ReadingDateRepository;
 import com.system.kenshinsystem.repository.ReadingsRepository;
 import com.system.kenshinsystem.repository.TenantRepository;
+import com.system.kenshinsystem.security.users.Role;
+import com.system.kenshinsystem.security.users.User;
+import com.system.kenshinsystem.security.users.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Configuration
+@Profile("test")
+@RequiredArgsConstructor
 public class config {
 	
+	private final PasswordEncoder encoder;
 	@Bean
 	CommandLineRunner commandLineRunner(BuildingRepository buildingRepository,ReadingDateRepository readingDateRepository
-			,FloorRepository floorRepository,TenantRepository tenantRepository,ReadingsRepository readingsRepository) {
+			,FloorRepository floorRepository,TenantRepository tenantRepository,ReadingsRepository readingsRepository,UserRepository userRepo) {
 		return args ->{
 			
 		     // Create a Building instance and initialize its properties
@@ -381,8 +392,13 @@ public class config {
 		         reading18.setFloor(floor3C);
 		         reading18.setReadingDate(readingDate3);
 		         readingsRepository.save(reading18);
-
+		         
+		         User user = new User();
+		         user.setUsername("default_user");
+		         user.setPassword(encoder.encode("admin"));
+		         user.setRole(Role.ADMIN);
+		         userRepo.save(user);
 		};
 	}
 
-}*/
+}

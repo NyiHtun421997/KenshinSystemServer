@@ -33,8 +33,11 @@ import com.system.kenshinsystem.service.ReadingsService;
 import com.system.kenshinsystem.service.TempMapService;
 import com.system.kenshinsystem.service.TenantService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping(path="api/kenshin/central")
+@RequiredArgsConstructor
 public class CentralController {
 	
 	private final ReadingDateService readingDateService;
@@ -44,35 +47,18 @@ public class CentralController {
 	private final ReadingsService readingsService;
 	private final TempMapService tempMapService;
 	
-	@Autowired
-	public CentralController(ReadingDateService readingDateService,BuildingService buildingService,
-			FloorService floorService,TenantService tenantService,ReadingsService readingsService,
-			TempMapService tempMapService, PhotoService photoService) {
-		
-		this.readingDateService = readingDateService;
-		this.buildingService = buildingService;
-		this.floorService = floorService;
-		this.tenantService = tenantService;
-		this.readingsService = readingsService;
-		this.tempMapService = tempMapService;
-	}
-	
 	@GetMapping("/latest_date")
 	public ResponseEntity<?> getLatestDayForBuilding(@RequestParam(name = "building_name",required = false)String buildingName) {
 		
 		LocalDate latestDate = this.readingDateService.getLatestDateByBuildingName(buildingName);
 		latestDate = latestDate.plusMonths(1);
 		return ResponseEntity.ok(latestDate);
-		//return latestDate.getYear()+"-"+Integer.toString(latestDate.getMonthValue()+1);
 	}
 	@GetMapping("/reading_dates")
 	public ResponseEntity<?> getReadingDatesForBuilding(@RequestParam(name = "building_name",required = false)String buildingName){
 		
 		List<ReadingDate> readingDateObjs = this.readingDateService.getReadingDateByBuildingName(buildingName);
-		if(readingDateObjs == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-							.body("Error: Not Found.");
-		}
+		
 		List<LocalDate> readingDates =  readingDateObjs.stream()
 									.map(ReadingDate :: getDate)
 									.collect(Collectors.toList());
@@ -82,15 +68,10 @@ public class CentralController {
 	@GetMapping("/building_names")
 	public ResponseEntity<?> getBuildingNames(){
 		
-		List<Building> buildings =  this.buildingService.getBuildingNames();
-		List<String> buildingNames = new ArrayList<>();		
-		if(buildings == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Error: Not Found.");
-		}
-		for(Building x : buildings) {			
-			buildingNames.add(x.getName());		
-		}
+		List<Building> buildingObjs =  this.buildingService.getBuildingNames();
+		List<String> buildingNames = buildingObjs.stream()
+												.map(Building::getName)
+												.collect(Collectors.toList());		
 		return ResponseEntity.ok(buildingNames);
 	}
 	
@@ -98,25 +79,16 @@ public class CentralController {
 	public ResponseEntity<?> getFloorListByBldName(@RequestParam(name = "building_name",required = false)String buildingName) {
 		
 		List<Floor> floors = this.floorService.getFloorListByBuildingName(buildingName);
-		List<String> floorNames = new ArrayList<>();
-		if(floors == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Error: Not Found.");
-		}
-		for(Floor x : floors) {			
-			floorNames.add(x.getName());		
-		}
+		List<String> floorNames = floors.stream()
+										.map(Floor::getName)
+										.collect(Collectors.toList());
 		return ResponseEntity.ok(floorNames);		
 	}
 	
 	@GetMapping("/tenants")
 	public ResponseEntity<?> getTenantListByBldName(@RequestParam(name = "building_name",required = false)String buildingName){
 		
-		List<String> tenants = this.tenantService.getTenantListByBuildingName(buildingName);		
-		if(tenants == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Error: Not Found.");
-		}		
+		List<String> tenants = this.tenantService.getTenantListByBuildingName(buildingName);	
 		return ResponseEntity.ok(tenants);	
 	}
 	

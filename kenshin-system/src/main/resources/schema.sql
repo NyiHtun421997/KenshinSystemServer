@@ -1,6 +1,0 @@
-CREATE DATABASE IF NOT EXISTS 'kenshin';
-
-
-
-
-

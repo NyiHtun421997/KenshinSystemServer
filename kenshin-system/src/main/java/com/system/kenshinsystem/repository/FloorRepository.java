@@ -10,6 +10,6 @@ import com.system.kenshinsystem.model.Floor;
 public interface FloorRepository extends JpaRepository<Floor,Long>{
 	
 	Optional<Floor> findByNameAndBuildingId(String buildingName,Long buildingId);
-	List<Floor> findByBuildingId(Long buildingId);
+	Optional<List<Floor>> findByBuildingId(Long buildingId);
 
 }

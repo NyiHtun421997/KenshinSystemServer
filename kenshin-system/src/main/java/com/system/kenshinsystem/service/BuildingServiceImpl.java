@@ -29,15 +29,8 @@ public class BuildingServiceImpl implements BuildingService{
 	@Override
 	public Building findByBuildingName(String buildingName) {
 		
-		Optional<Building> buildingOptional = this.buildingRepository.findByName(buildingName);
-		
-		if(buildingOptional.isPresent()) {
-			return buildingOptional.get();
-		}
-		else {
-			return null;
-		}
-		
+		return this.buildingRepository.findByName(buildingName)
+					.orElseThrow(() -> new NullPointerException("Building not found."));	
 	}
 
 }

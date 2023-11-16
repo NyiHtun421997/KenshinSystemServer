@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,35 +32,30 @@ public class ReadingDateServiceImpl implements ReadingDateService{
 	public LocalDate getLatestDateByBuildingName(String buildingName) {
 		
 		Building building = buildingService.findByBuildingName(buildingName);
-		List<ReadingDate> readingDates = this.readingDateRepository.findByBuildingId(building.getId());
-		
-		// Define a comparator to compare ReadingDate entities based on the date attribute
+		List<ReadingDate> readingDates = this.readingDateRepository.findByBuildingId(building.getId())
+												.orElseThrow(() -> new NullPointerException("Reading Date not found."));
+												
 		Comparator<ReadingDate> dateComparator = Comparator.comparing(ReadingDate::getDate);
-
-		// Sort the list in descending order (latest date first)
-		Collections.sort(readingDates, dateComparator.reversed());
 		
-		return readingDates.get(0).getDate();
+		return readingDates.stream()
+							.max(dateComparator)
+							.map(ReadingDate::getDate)
+							.get();
+					
 	}
 	@Override
 	public ReadingDate findByReadingDate(LocalDate readingDate) {
 		
-		Optional<ReadingDate> readingDateOptional = this.readingDateRepository.findByDate(readingDate);
-		
-		if(readingDateOptional.isPresent()) {
-			
-			return readingDateOptional.get();
-		}
-		else {
-			return null;
-		}
+		return this.readingDateRepository.findByDate(readingDate)
+														.orElseThrow(() -> new NullPointerException("Reading Date not found."));		
 	}
 
 	@Override
 	public List<ReadingDate> getReadingDateByBuildingName(String buildingName) {
 		
 		Building building = buildingService.findByBuildingName(buildingName);
-		List<ReadingDate> readingDates = this.readingDateRepository.findByBuildingId(building.getId());
+		List<ReadingDate> readingDates = this.readingDateRepository.findByBuildingId(building.getId())
+												.orElseThrow(() -> new NullPointerException("Reading Date not found."));
 		
 		return readingDates;
 	}

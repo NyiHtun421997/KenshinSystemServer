@@ -19,9 +19,9 @@ public class ExceptionHandlerAdvice {
 	}
 	@ExceptionHandler({NullPointerException.class})
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<?> handleNullException(){
+	public ResponseEntity<?> handleNullException(NullPointerException e){
 	return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Request parameter value is not valid.");
+						.body("Request parameter value is not valid. "+e.getMessage());
 	}
 
 }
