@@ -58,7 +58,6 @@ public class CentralController {
 	public ResponseEntity<?> getReadingDatesForBuilding(@RequestParam(name = "building_name",required = false)String buildingName){
 		
 		List<ReadingDate> readingDateObjs = this.readingDateService.getReadingDateByBuildingName(buildingName);
-		
 		List<LocalDate> readingDates =  readingDateObjs.stream()
 									.map(ReadingDate :: getDate)
 									.collect(Collectors.toList());
@@ -107,57 +106,35 @@ public class CentralController {
 			@RequestParam(name = "floor_name",required = false)String floorName,@RequestBody ReadingDTO readingDTO){
 		
 		String message = this.readingsService.updateReadings(buildingName, readingDate, floorName, readingDTO);
-		if(message == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Error: Readings do not exist.");
-		}
 		return ResponseEntity.ok(message);
 	}
 	//this will be passed into CH01
+	//DB -> CH01
 	@GetMapping("floor/past_readings")
 	public ResponseEntity<?> getFloorReadings(@RequestParam(name = "building_name",required = false)String buildingName,
 			@RequestParam(name = "reading_date",required = false)LocalDate readingDate){
 		
-		LinkedHashMap<String,Readings> floorReadingsMap = this.readingsService.getReadings(buildingName, readingDate);
-		if(floorReadingsMap == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Error: Readings do not exist.");
-		}
-		LinkedHashMap<String,ReadingDTO> floorReadingDTOMap = new LinkedHashMap<>();
-		for(Map.Entry<String,Readings> x : floorReadingsMap.entrySet()) {
-			floorReadingDTOMap.put(x.getKey(),ReadingMapper.mapToReadingDTO(x.getValue()));
-		}
+		LinkedHashMap<String,ReadingDTO> floorReadingDTOMap = (LinkedHashMap<String,ReadingDTO>)this.readingsService.getFloorReadingsFromDb(buildingName, readingDate);
 		return ResponseEntity.ok(floorReadingDTOMap);
 	}
-	//end point for getting readings for each floor from the past and converting into readings for each tenant
+	//end point for getting readings for each floor from the past(DB) and converting into readings for each tenant
 	//this will be passed into CS01
+	//DB -> CS01
 	@GetMapping("tenant/past_readings")
 	public ResponseEntity<?> getTenantReadings(@RequestParam(name = "building_name",required = false)String buildingName,
 											@RequestParam(name = "reading_date",required = false)LocalDate readingDate){
-		LinkedHashMap<String,ReadingDTO> tenant_reading_map = new LinkedHashMap<>();		
-		List<String> floor_tenants = this.tenantService.getTenantListByBuildingName(buildingName);
-			
-		//get a list of floor_tenant and iterate through each
-		for(String floor_tenant : floor_tenants) {			
-			//substring floor_name・tenant_name format into tenant_name
-			String tenantName = floor_tenant.substring(floor_tenant.indexOf("・")+1);
-			//since tenants can have same names,we need to add extra parameter to distinguish
-			String floorName = floor_tenant.substring(0,floor_tenant.indexOf("・"));
-			Tenant tenant = this.tenantService.findByFloorNameAndBuildingId(tenantName,floorName,buildingName);
-			//find reading from DB for the floor that tenant occupies
-			Readings readings = this.readingsService.getReadings(buildingName, readingDate, tenant.getFloor().getName());			
-			//will multiply each reading with this area ratio to get reading for each tenant
-			Double areaRatio = this.tenantService.getAreaRatio(tenantName,floorName,buildingName);			
-			ReadingDTO readingDTO = ReadingMapper.mapToTenantReadingDTO(readings, areaRatio);			
-			tenant_reading_map.put(floor_tenant, readingDTO);
-		}		
+		LinkedHashMap<String,ReadingDTO> tenant_reading_map = (LinkedHashMap<String, ReadingDTO>) 
+															  this.readingsService.getTenantReadingsFromDb(buildingName,readingDate);		
 		return ResponseEntity.ok(tenant_reading_map);
 	}
+	//IS01 -> TempMap
+	//CH01 -> TempMap
 	@PostMapping("/temporary/save_readings")
 	public void storeReadingsInTempMap(@RequestBody ReadingDTO readingDTO) {
 		
 		this.tempMapService.addReading(readingDTO);
 	}
+	//CH01 -> TempMap
 	@PostMapping("/temporary/save_comments")
 	public void storeComments(@RequestParam(name = "building_name",required = false)String buildingName,
 			@RequestBody LinkedHashMap<String,String> commentData){
@@ -169,43 +146,24 @@ public class CentralController {
 	}
 	//end point for converting readings for each floor from temporary storage into readings for each tenant
 	//this will be passed to CS01
+	//TempMap -> CS01
 	@GetMapping("/temporary/tenant/get_readings")
 	public ResponseEntity<?> getTenantReadingsFromTempMap(@RequestParam(name = "building_name", required = false)String buildingName) {
 			
-		//will get all the readings for all floors of a building
-		LinkedHashMap<String,ReadingDTO> floor_reading_map = (LinkedHashMap<String, ReadingDTO>) this.tempMapService.getReadingsForBuilding(buildingName);
-		if(floor_reading_map == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-							.body("Error: Readings do no exist:");
-		}
-		LinkedHashMap<String,ReadingDTO> tenant_reading_map = new LinkedHashMap<>();	
-		List<String> floor_tenants = this.tenantService.getTenantListByBuildingName(buildingName);		
-		//get a list of floor_tanant and iterate through each
-		for(String floor_tenant : floor_tenants) {
-			//substring floor_name・tenant_name format into tenant_name
-			String tenantName = floor_tenant.substring(floor_tenant.indexOf("・")+1);
-			//since tenants can have same names,we need to add extra parameter to distinguish
-			String floorName = floor_tenant.substring(0,floor_tenant.indexOf("・"));
-			Tenant tenant = this.tenantService.findByFloorNameAndBuildingId(tenantName,floorName,buildingName);
-			//find reading from TempMap for the floor that tenant occupies			
-			//will multiply each reading with this area ratio to get reading for each tenant
-			Double areaRatio = this.tenantService.getAreaRatio(tenantName,floorName,buildingName);
-			ReadingDTO readingDTO = floor_reading_map.get(tenant.getFloor().getName());
-			//call the mapper method to convert readings for each floor from temporary storage to readings for each tenant
-			ReadingDTO newReadingDTO = ReadingMapper.floorToTenantReadingDTO(readingDTO, areaRatio);			
-			tenant_reading_map.put(floor_tenant, newReadingDTO);
-		}
+
+		LinkedHashMap<String,ReadingDTO> tenant_reading_map = (LinkedHashMap<String,ReadingDTO>)
+															  this.readingsService.getTenantReadingsFromTempMap(buildingName);
+		
 		return ResponseEntity.ok(tenant_reading_map);
 		
 	}
 	//this will be passed into CH01
+	//TempMap -> CH01
 	@GetMapping("/temporary/floor/get_readings")
 	public ResponseEntity<?> getFloorReadingsFromTempMap(@RequestParam(name = "building_name",required = false)String buildingName) {
-		LinkedHashMap<String,ReadingDTO> floor_reading_map = (LinkedHashMap<String, ReadingDTO>) this.tempMapService.getReadingsForBuilding(buildingName);
-		if(floor_reading_map == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-							.body("Error: Readings do no exist:");
-		}
+		LinkedHashMap<String,ReadingDTO> floor_reading_map = (LinkedHashMap<String, ReadingDTO>) 
+															 this.tempMapService.getReadingsForBuilding(buildingName)
+															 .orElseThrow(() -> new NullPointerException("Readings might not exist."));
 		return ResponseEntity.ok(floor_reading_map);
 	}
 	
@@ -228,8 +186,7 @@ public class CentralController {
 		}
 		return newList;
 	}
-	
-	
+	//TempMap -> DB
 	@PostMapping("/temporary/final_approve")
 	@PreAuthorize("hasRole('ROLE_MANAGER')")
 	public void finalApprove(@RequestParam(name = "building_name",required = false)String buildingName,

@@ -47,29 +47,13 @@ public class ReadingMapper {
 		return readingDTO;
 		
 	}
-	
-	public static ReadingDTO mapToTenantReadingDTO(Readings readings,Double areaRatio) {
-		
-		Double[] readingsArray = { readings.getLightingReading()*areaRatio, readings.getPowerReading()*areaRatio, readings.getWaterReading()*areaRatio, readings.getGasReading()*areaRatio };
-		Double[] readingsBeforeChangeArray = { readings.getLightingReadingBeforeChange()*areaRatio, readings.getPowerReadingBeforeChange()*areaRatio, readings.getWaterReadingBeforeChange()*areaRatio, readings.getGasReadingBeforeChange()*areaRatio};
-		String buildingName = readings.getFloor().getBuilding().getName();
-		String floorName = readings.getFloor().getName();
-		LocalDate readingDate = readings.getReadingDate().getDate();
-		String comment = readings.getComment();
-		
-		ReadingDTO readingDTO = new ReadingDTO( readingsArray,readingsBeforeChangeArray,buildingName,floorName,readingDate,comment);
-												
-		return readingDTO;
-		
-	}
 
 	//Mapper method to convert Readings for each floor to Readings for each tenant
-public static ReadingDTO floorToTenantReadingDTO(ReadingDTO readingDTO,Double areaRatio) {
+	public static ReadingDTO floorToTenantReadingDTO(ReadingDTO readingDTO,Double areaRatio) {
 	
 	//multiplying with area ratio for each tenant reading
 	Double[] oldReadings =  readingDTO.getReadings();
 	Double[] newReadings = { oldReadings[0]*areaRatio, oldReadings[1]*areaRatio, oldReadings[2]*areaRatio, oldReadings[3]*areaRatio };
-	
 	
 	//multiplying with area ratio for each tenant reading before change
 	Double[] oldReadingsBeforeChange =  readingDTO.getReadingsBeforeChange();
@@ -81,8 +65,7 @@ public static ReadingDTO floorToTenantReadingDTO(ReadingDTO readingDTO,Double ar
 		
 		ReadingDTO newReadingDTO = new ReadingDTO( newReadings,newReadingsBeforeChange,buildingName,floorName,readingDate,comment);
 												
-		return newReadingDTO;
-		
+		return newReadingDTO;	
 	}
 	
 }

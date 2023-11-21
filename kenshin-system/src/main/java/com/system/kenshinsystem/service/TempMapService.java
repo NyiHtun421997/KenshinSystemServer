@@ -1,12 +1,15 @@
 package com.system.kenshinsystem.service;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.system.kenshinsystem.dto.ReadingDTO;
+import com.system.kenshinsystem.mapper.ReadingMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,18 +52,15 @@ public class TempMapService {
         return 	newBld_FloorMap;
     }		
 		
-    public Map<String, ReadingDTO> getReadingsForBuilding(String buildingName) {		
+    public Optional<Map<String, ReadingDTO>> getReadingsForBuilding(String buildingName) {		
         BuildingKey buildingKey = new BuildingKey(buildingName);
-    	return bld_floorMap.get(buildingKey);		
+    	return Optional.ofNullable(bld_floorMap.get(buildingKey));
     }		
 		
-    public ReadingDTO getReadingForFloor(String buildingName,String floorName) {
+    public Optional<ReadingDTO> getReadingForFloor(String buildingName,String floorName) {
     	BuildingKey buildingKey = new BuildingKey(buildingName);
-        Map<String, ReadingDTO> floorMap = bld_floorMap.get(buildingKey);		 
-        if (floorMap != null) {		
-            return floorMap.get(floorName);		
-        }		
-        return null;		
+        Map<String, ReadingDTO> floorMap = bld_floorMap.get(buildingKey);		 	
+        return Optional.ofNullable(floorMap.get(floorName));				
     }	
     
     public Boolean doesBuildingDataExist(String buildingName) {
