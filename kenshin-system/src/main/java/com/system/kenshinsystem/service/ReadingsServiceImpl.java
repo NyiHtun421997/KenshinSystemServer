@@ -51,7 +51,9 @@ public class ReadingsServiceImpl implements ReadingsService{
 		return floor_tenants.stream()
 							.collect(Collectors.toMap(Function.identity(),
 							floor_tenant -> this.findReadingDTOFromFloor_Tenant(floor_tenant, buildingName, date,
-																				this::findReadingAndConvertToTenantReadingDTO)));
+																				this::findReadingAndConvertToTenantReadingDTO),
+							(existing, replacement) -> existing,
+					        LinkedHashMap::new));
 	}
 	private ReadingDTO findReadingDTOFromFloor_Tenant(String floor_tenant,String buildingName,LocalDate date,
 													  FourParameterFunction<String,String,LocalDate,Double,ReadingDTO> resolver) {
@@ -79,7 +81,9 @@ public class ReadingsServiceImpl implements ReadingsService{
 							.collect(Collectors.toMap
 							(Function.identity(), 
 							floor_tenant -> this.findReadingDTOFromFloor_Tenant(floor_tenant, buildingName, null,
-																				this::findReadingDTOAndConvertToTenantReadingDTO)));
+																				this::findReadingDTOAndConvertToTenantReadingDTO),
+							(existing, replacement) -> existing,
+					        LinkedHashMap::new));
 					 
 	}
 	private ReadingDTO findReadingDTOAndConvertToTenantReadingDTO(String buildingName, String floorName, LocalDate date, Double areaRatio) {
@@ -94,15 +98,18 @@ public class ReadingsServiceImpl implements ReadingsService{
 		
 		Building building = this.buildingService.findByBuildingName(buildingName);
 		List<Floor> floors = building.getFloors();
-		LinkedHashMap<String,Readings> floorReadingsMap = (LinkedHashMap<String, Readings>)
-															floors.stream().collect
-															(Collectors.toMap
-															(floor -> floor.getName(),
-															 floor -> this.findFloorReading
-															(floor.getName(), buildingName, date)));
+		Map<String,Readings> floorReadingsMap = floors.stream()
+													  .collect(Collectors.toMap
+													  (floor -> floor.getName(),
+													   floor -> this.findFloorReading(floor.getName(), buildingName, date),
+													  (existing, replacement) -> existing,
+													   LinkedHashMap::new));
 		return floorReadingsMap.entrySet().stream()
-				  .collect(Collectors.toMap(entry -> entry.getKey(),
-										  	entry -> ReadingMapper.mapToReadingDTO(entry.getValue())));
+				  						  .collect(Collectors.toMap
+				  						  (entry -> entry.getKey(),
+										   entry -> ReadingMapper.mapToReadingDTO(entry.getValue()),
+										  (existing, replacement) -> existing,
+									       LinkedHashMap::new));
 	}
 
 	@Override
