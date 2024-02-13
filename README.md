@@ -30,14 +30,14 @@ Efficiency: Improves efficiency, reliability, and availability of the meter read
   - Docker compose up
 2.Download csv files from github project repository and place them inside /postgres-kenshin directory so that server can start with pre populated data.
 3.Run this psql command line to copy csv files into db.
-  - docker exec -it postgres-kenshin psql -U ADMIN -d kenshin
-  - COPY Building(name) FROM '/data/postgres/Building.csv' CSV HEADER;
-  - COPY Reading_Date(date) FROM '/data/postgres/Reading_Date.csv' CSV HEADER;
-  - COPY Reading_Date_Building(reading_date_id,building_id) FROM '/data/postgres/Reading_Date_Building.csv' CSV HEADER;
-  - COPY Floor(name,area,building_id,is_parent) FROM '/data/postgres/Floor.csv' CSV HEADER;
-  - COPY Tenant(name,floor_id,area) FROM '/data/postgres/Tenant.csv' CSV HEADER;
-  - COPY Readings(lighting_reading,power_reading,water_reading,gas_reading,lighting_reading_before_change,power_reading_before_change,water_reading_before_change,gas_reading_before_change,floor_id,reading_date_id,comment) FROM '/data/postgres/Readings.csv' DELIMITER ',' CSV HEADER;
-  - COPY _User(id,username,password,role) FROM '/data/postgres/_User.csv' CSV HEADER;
+  - docker exec -it postgres-kenshin psql -U ADMIN -d kenshin(Enter postgres container and do client side operation)
+  - \COPY Building(name) FROM '/data/postgres/Building.csv' CSV HEADER;
+  - \COPY Reading_Date(date) FROM '/data/postgres/Reading_Date.csv' CSV HEADER;
+  - \COPY Reading_Date_Building(reading_date_id,building_id) FROM '/data/postgres/Reading_Date_Building.csv' CSV HEADER;
+  - \COPY Floor(name,area,building_id,is_parent) FROM '/data/postgres/Floor.csv' CSV HEADER;
+  - \COPY Tenant(name,floor_id,area) FROM '/data/postgres/Tenant.csv' CSV HEADER;
+  - \COPY Readings(lighting_reading,power_reading,water_reading,gas_reading,lighting_reading_before_change,power_reading_before_change,water_reading_before_change,gas_reading_before_change,floor_id,reading_date_id,comment) FROM '/data/postgres/Readings.csv' DELIMITER ',' CSV HEADER;
+  - \COPY _User(id,username,password,role) FROM '/data/postgres/_User.csv' CSV HEADER;
 
 日本語
 
@@ -72,11 +72,11 @@ Security:Spring Boot Starter Security with Jwt Authentication（認証）, Role 
   - Docker compose up
 2.githubのプロジェクト・リポジトリからcsvファイルをダウンロードし、/postgres-kenshinディレクトリに置く。
 3.psqlコマンドラインを実行して、csvファイルをデータベースにコピーする。
-  - docker exec -it postgres-kenshin psql -U ADMIN -d kenshin
-  - COPY Building(name) FROM '/data/postgres/Building.csv' CSV HEADER;
-  - COPY Reading_Date(date) FROM '/data/postgres/Reading_Date.csv' CSV HEADER;
-  - COPY Reading_Date_Building(reading_date_id,building_id) FROM '/data/postgres/Reading_Date_Building.csv' CSV HEADER;
-  - COPY Floor(name,area,building_id,is_parent) FROM '/data/postgres/Floor.csv' CSV HEADER;
-  - COPY Tenant(name,floor_id,area) FROM '/data/postgres/Tenant.csv' CSV HEADER;
-  - COPY Readings(lighting_reading,power_reading,water_reading,gas_reading,lighting_reading_before_change,power_reading_before_change,water_reading_before_change,gas_reading_before_change,floor_id,reading_date_id,comment) FROM '/data/postgres/Readings.csv' DELIMITER ',' CSV HEADER;
-  - COPY _User(id,username,password,role) FROM '/data/postgres/_User.csv' CSV HEADER;
+  - docker exec -it postgres-kenshin psql -U ADMIN -d kenshin(コンテナー内入り、クライアントサイド操作する)
+  - \COPY Building(name) FROM '/data/postgres/Building.csv' CSV HEADER;
+  - \COPY Reading_Date(date) FROM '/data/postgres/Reading_Date.csv' CSV HEADER;
+  - \COPY Reading_Date_Building(reading_date_id,building_id) FROM '/data/postgres/Reading_Date_Building.csv' CSV HEADER;
+  - \COPY Floor(name,area,building_id,is_parent) FROM '/data/postgres/Floor.csv' CSV HEADER;
+  - \COPY Tenant(name,floor_id,area) FROM '/data/postgres/Tenant.csv' CSV HEADER;
+  - \COPY Readings(lighting_reading,power_reading,water_reading,gas_reading,lighting_reading_before_change,power_reading_before_change,water_reading_before_change,gas_reading_before_change,floor_id,reading_date_id,comment) FROM '/data/postgres/Readings.csv' DELIMITER ',' CSV HEADER;
+  - \COPY _User(id,username,password,role) FROM '/data/postgres/_User.csv' CSV HEADER;
