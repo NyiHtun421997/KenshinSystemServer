@@ -8,9 +8,8 @@ services:
       POSTGRES_DB: kenshin
       POSTGRES_USER: ADMIN
       POSTGRES_PASSWORD: ADMIN
-      PGDATA: /data/postgres
     volumes:
-      - ./postgres-kenshin:/data/postgres
+      - ./postgres-kenshin:/var/lib/psql/data
     expose:
       - "5432"
     ports:
